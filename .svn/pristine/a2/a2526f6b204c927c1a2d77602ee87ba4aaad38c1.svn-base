@@ -1,0 +1,23 @@
+#ifndef _LCD_I2C_PCF8574_Transmiter_h_
+#define _LCD_I2C_PCF8574_Transmiter_h_
+
+#include "LCD_AbstractTransmiter.h"
+
+class I2C;
+class LCD_I2C_PCF8574_Transmiter : public LCD_AbstractTransmiter
+{
+  public:
+    void init(unsigned char rs, unsigned char enable, unsigned char d0, unsigned char d1, unsigned char d2, unsigned char d3);
+    void setValueEnableDataPin(unsigned char enableDisable);
+    void setDataPins          (unsigned char data4or8Bit);
+    void setValueRWPin(unsigned char readWrite);
+    void setValueRSPin(unsigned char registerSelection);
+  
+  protected:
+    I2C* myI2CClient;
+    unsigned char i2cAddress;
+
+    void transmitByte(unsigned char oneByte);
+};
+
+#endif

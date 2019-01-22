@@ -1,0 +1,214 @@
+#include "SystemAPI.h"
+#include <vcl.h>
+#include <sstream>
+
+// Beide folgenden h-Dateien gehören IN DIESER REIHENFOLGE zusammen ///
+#include <windows.h>
+#include <tlhelp32.h>
+
+/////////////////////////////////////////////////////////////
+// Statische Variable:
+double SystemAPI::ticksPerMykrosec = 0.0;
+/////////////////////////////////////////////////////////////
+
+void SystemAPI::taskleisteEinblenden()
+{
+   ::ShowWindow(FindWindow("Shell_TrayWnd", NULL), SW_SHOW);
+};
+
+void SystemAPI::taskleisteAusblenden()
+{
+   ::ShowWindow(FindWindow("Shell_TrayWnd", NULL), SW_HIDE);
+};
+
+
+// http://codezentrale.bplaced.net/dcz/?cat=3&paged=14
+void SystemAPI::setTransparency(HWND einHandle, int transparencyValue_0_255)
+{
+   SetWindowLong(einHandle, GWL_EXSTYLE, GetWindowLong(einHandle, GWL_EXSTYLE) | WS_EX_LAYERED);
+   SetLayeredWindowAttributes(einHandle, 0, transparencyValue_0_255, LWA_ALPHA);
+
+   BLENDFUNCTION blend;
+   blend.BlendOp = AC_SRC_OVER;
+   blend.BlendFlags = 0;
+   blend.AlphaFormat = 0;
+   blend.SourceConstantAlpha = AC_SRC_ALPHA ;
+   UpdateLayeredWindow(einHandle, NULL, NULL, NULL, NULL, NULL,NULL, &blend, ULW_ALPHA);
+}
+
+
+
+void SystemAPI::socketSetTrueFalseSocketOpt(int handler, int level, int option, bool enable)
+{
+   ::setsockopt( handler,
+                 level,
+                 option,
+                 (char*) &enable,
+                 sizeof(enable)   );
+/*
+http://msdn.microsoft.com/en-us/library/ms740476%28VS.85%29.aspx
+int setsockopt(              // returns Errorcode
+  __in  SOCKET      s,       // A descriptor that identifies a socket
+  __in  int         level,   // The level at which the option is defined (for example, SOL_SOCKET)
+  __in  int         optname, // The socket option for which the value is to be set (for example, SO_BROADCAST)
+  __in  const char* optval,  // A pointer to the buffer in which the value for the requested option is specified
+  __in  int         optlen   // The size, in bytes, of the buffer pointed to by the optval parameter
+);
+*/
+}
+
+
+void SystemAPI::threadKillAllThreadsExceptThisOfCurrentProcess()
+{
+   HANDLE        hSnapshotActualRunningThreads  = ::CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+   DWORD         currentProcessID = ::GetCurrentProcessId();
+   DWORD         currentThreadID  = ::GetCurrentThreadId();
+
+   THREADENTRY32 threadEntrypoint;
+   {
+      threadEntrypoint.dwSize = sizeof(THREADENTRY32);
+      bool success = ::Thread32First(hSnapshotActualRunningThreads, &threadEntrypoint);
+      if(!success) ::CloseHandle(hSnapshotActualRunningThreads);
+   }
+
+   // Process dies when all his threads were killed!
+   do
+   {
+       // Alle threads des aktuellen Prozesses ausser den eigenen ("kill()") beenden
+       if(  (threadEntrypoint.th32OwnerProcessID == currentProcessID)
+          &&(threadEntrypoint.th32ThreadID       != currentThreadID ) )
+       {
+           HANDLE currentThreadHandle = ::OpenThread(THREAD_TERMINATE, false, threadEntrypoint.th32ThreadID);
+           ::TerminateThread(currentThreadHandle, -1);
+       }
+   }
+   while(::Thread32Next(hSnapshotActualRunningThreads, &threadEntrypoint));
+
+   ::CloseHandle(hSnapshotActualRunningThreads);
+}
+
+void SystemAPI::sleep(int ms)
+{
+   ::Sleep(ms);
+}
+
+long int SystemAPI::getMsSinceSystemstart()
+{
+   return ::GetTickCount();
+}
+
+double SystemAPI::getTicksPerMykrosec()
+{
+   if (ticksPerMykrosec > 0) return ticksPerMykrosec;
+
+   __int64 FrequenzDesHighResPerformanceCounters;
+   ::QueryPerformanceFrequency( (LARGE_INTEGER*) &FrequenzDesHighResPerformanceCounters);
+   ticksPerMykrosec = FrequenzDesHighResPerformanceCounters/1000000.0;  // Mykro
+   return ticksPerMykrosec;
+}
+
+long int SystemAPI::get100MykroSecSinceSystemstart()
+{
+   __int64 ticks_aktuell = SystemAPI::queryPerformanceCounter();
+
+   double ticksPer100MykroSec = getTicksPerMykrosec()*100.0;
+   long int time100MyS = (double)ticks_aktuell / ticksPer100MykroSec;
+
+   return time100MyS;
+}
+
+std::string SystemAPI::getTimeDDMMYYY_hhmmss()
+{
+   SYSTEMTIME t;
+   ::GetLocalTime(&t);
+
+   std::stringstream out;
+   out << t.wDay << "." << t.wMonth << "." << t.wYear << " " << t.wHour << ":" << t.wMinute << ":" << t.wSecond << " (ms)" << t.wMilliseconds;
+   return out.str();
+}
+
+void SystemAPI::threadExitAndFreeStructure(void* threadHandle)
+{
+   if ((int)threadHandle == -1)
+   {
+      threadHandle = GetCurrentThread();
+   }
+
+   unsigned long dwExitCode;
+   ::TerminateThread(threadHandle, dwExitCode); // Threadspezifischen Exit-Code für diesen Thread abrufen
+   ::CloseHandle(threadHandle);
+}
+
+int SystemAPI::threadGetCurrentID()
+{
+   return ::GetCurrentThreadId();
+}
+
+void* SystemAPI::threadGetCurrentThreadHandle()
+{
+   return GetCurrentThread();
+}
+
+void SystemAPI::initBITMAPINFO_RGB24(void* pBITMAPINFO, int width, int height)
+{
+   BITMAPINFO* pBMI = (BITMAPINFO*)pBITMAPINFO;
+
+   pBMI->bmiHeader.biSize          = sizeof(pBMI->bmiHeader);
+   pBMI->bmiHeader.biWidth         = width;
+   pBMI->bmiHeader.biHeight        = height;  // darf auch negativ werden !
+   pBMI->bmiHeader.biPlanes        = 1;
+   pBMI->bmiHeader.biBitCount      = 24;
+   pBMI->bmiHeader.biCompression   = BI_RGB;
+   pBMI->bmiHeader.biSizeImage     = ((((abs(width) * pBMI->bmiHeader.biBitCount) + 31) & ~31) >> 3) * abs(height);
+   pBMI->bmiHeader.biXPelsPerMeter = 0;
+   pBMI->bmiHeader.biYPelsPerMeter = 0;
+   pBMI->bmiHeader.biClrUsed       = 0;
+   pBMI->bmiHeader.biClrImportant  = 0;
+   pBMI->bmiColors->rgbRed         = 0;
+   pBMI->bmiColors->rgbGreen       = 0;
+   pBMI->bmiColors->rgbBlue        = 0;
+   pBMI->bmiColors->rgbReserved    = 0;
+}
+
+int SystemAPI::getScreenWidth()
+{
+   return ::GetSystemMetrics( SM_CXSCREEN );
+}
+
+int SystemAPI::getScreenHeight()
+{
+   return ::GetSystemMetrics( SM_CYSCREEN );
+}
+
+bool SystemAPI::threadChekExists(void* threadHandle)
+{
+    DWORD exitCode;
+    bool result = ::GetExitCodeThread(
+       threadHandle,
+       &exitCode
+    );
+
+    if (result == false)
+    {
+       return false;  // Handle ungültig
+    }
+    else
+    {
+       return (exitCode == STILL_ACTIVE); // Exitcode wurde von Thread noch nicht gesetzt (also läuft er noch)
+    }
+}
+
+__int64 SystemAPI::queryPerformanceCounter()
+{
+   __int64 ticks_aktuell;
+   ::QueryPerformanceCounter( (LARGE_INTEGER*) &ticks_aktuell);
+   return ticks_aktuell;
+}
+
+__int64 SystemAPI::getDiskFreeSpace(char* volumeName)
+{
+   __int64 numBytesFreeSpace;
+   Sysutils::GetDiskFreeSpaceEx(volumeName, NULL, NULL, &numBytesFreeSpace);
+   return numBytesFreeSpace;
+}
+

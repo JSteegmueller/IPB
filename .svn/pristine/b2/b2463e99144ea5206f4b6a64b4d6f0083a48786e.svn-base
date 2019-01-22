@@ -1,0 +1,159 @@
+#include "SPIClass.h"
+#include <Arduino.h>
+
+void SPIClass::init()
+{
+  Serial.print("MOSI: ");
+  Serial.println(MOSI);
+  Serial.print("MISO: ");
+  Serial.println(MISO);
+  Serial.print("SCK: ");
+  Serial.println(SCK);
+  Serial.print("SS: ");
+  Serial.println(SS);
+
+  //https://sites.google.com/site/qeewiki/books/avr-guide/spi
+
+  // SPCR: SPIE  SPE  DORD  MSTR  CPOL  CPHA  SPR1  SPR0 
+  // SPSR: SPIF  WCOL -     -     -     -     -     SPI2X 
+
+  // SPIE   // Interrupt enable
+  // SPE    // System Enable
+  // DORD   // Data Order 0=MSB First                0 = CMOS  1= Open Drain
+  // MSTR   // Master not Slave
+  // CPOL   // Clock Polarity
+  // CPHA   // Clock Phase
+  // SPR1   // Frequency
+  // SPR0   // Frequency
+  
+  // SPIF   // 1 when Data Transmission is Complete. Check bevor set SPDR!
+  // WCOL   // 1 while transmission of Data
+
+  pinMode(SS,   OUTPUT);
+  pinMode(MOSI, OUTPUT);
+  pinMode(SCK,  OUTPUT);
+  pinMode(MISO, INPUT);
+
+  setMode(0);           // Uebertragungsmodus
+  setClockFrequency_2_4_8_16_32_128(128); // 8 MHz @ 16
+  bitSet(SPCR, MSTR);   // master
+  bitSet(SPCR, SPE);    // Enable Service Provider Interface
+}
+
+void SPIClass::setMode(unsigned char mode_0_3)
+{
+  digitalWrite(SS,   HIGH); // immer
+
+  if (mode_0_3 == 0)
+  {
+     bitClear(SPCR, CPOL);
+     bitClear(SPCR, CPHA);
+     digitalWrite(SCK,  LOW);
+  }
+  else if (mode_0_3 == 1)
+  {
+     bitClear(SPCR, CPOL);
+     bitSet(SPCR, CPHA);
+     digitalWrite(SCK,  LOW);
+  }
+  else if (mode_0_3 == 2)
+  {
+     bitSet(SPCR, CPOL);
+     bitClear(SPCR, CPHA);
+     digitalWrite(SCK,  HIGH);
+  }
+  else if (mode_0_3 == 3)
+  {
+     bitSet(SPCR, CPOL);
+     bitSet(SPCR, CPHA);
+     digitalWrite(SCK,  HIGH);
+  }
+}
+
+void SPIClass::setClockFrequency_2_4_8_16_32_128(unsigned char divider)
+{
+  if (divider == 2)
+  {
+     bitSet(SPSR, SPI2X);
+     bitClear(SPCR, SPR0);
+     bitClear(SPCR, SPR1);
+  }
+  else if (divider == 4)
+  {
+     bitClear(SPSR, SPI2X);
+     bitClear(SPCR, SPR0);
+     bitClear(SPCR, SPR1);
+  }
+  else if (divider == 8)
+  {
+     bitSet(SPSR, SPI2X);
+     bitClear(SPCR, SPR0);
+     bitSet(SPCR, SPR1);
+  }
+  else if (divider == 16)
+  {
+     bitClear(SPSR, SPI2X);
+     bitClear(SPCR, SPR0);
+     bitSet(SPCR, SPR1);
+  }
+  else if (divider == 32)
+  {
+     bitSet(SPSR, SPI2X);
+     bitSet(SPCR, SPR0);
+     bitClear(SPCR, SPR1);
+  }
+  else if (divider == 64)
+  {
+     bitSet(SPSR, SPI2X);
+     bitSet(SPCR, SPR0);
+     bitSet(SPCR, SPR1);
+  }
+  else if (divider == 128)
+  {
+     bitClear(SPSR, SPI2X);
+     bitSet(SPCR, SPR0);
+     bitSet(SPCR, SPR1);
+  }
+}
+
+void SPIClass::startTransmission()
+{
+//  Serial.println("startTransmission");
+  cli(); //Keine Unterbrechungen Mehr!
+  digitalWrite(SS, LOW);
+}
+
+void SPIClass::finishTransmission()
+{
+//  Serial.println("finishTransmission");
+  digitalWrite(SS, HIGH);
+  sei(); // Interrupts wieder erlauben.
+}
+
+void SPIClass::sendByte(unsigned char data)
+{
+  SPDR = data;
+  
+  unsigned char trials = 0;
+  while ((bitRead(SPSR, SPIF)==0) && (trials < 1000))  // SPIF = 0 --> Transmission incomplete
+  {
+    trials++;
+  }
+  
+  if (trials < 1000)
+  {
+//     Serial.print("TransmitCycles: ");
+//     Serial.print((int)(trials));
+//     Serial.print(" Transmitted data: ");
+//     Serial.println((int)data);
+  }
+  else
+  {
+     Serial.println("Send failed!");
+     Serial.print(" Transmitted data: ");
+     Serial.println((int)data);
+     return;
+  }
+}
+
+

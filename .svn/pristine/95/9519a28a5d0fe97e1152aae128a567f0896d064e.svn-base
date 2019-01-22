@@ -1,0 +1,18 @@
+//Codereview OK
+#ifndef _LogDev_h
+#define _LogDev_h
+
+#include "TGString.h"
+
+class LogDevice
+{
+public:
+   LogDevice();
+   virtual ~LogDevice(); // Muss virtual sein, damit Ableitung
+                      // als Basisklassenzeiger (auf LogDev*) gehalten werden kann.
+                      // Somit wird Destruktor der abgeleiteten Klasse aufgerufen.
+                      // Zugriff auf diesen Destruktor erfolgt im Anschluss dennoch
+                      // automatisch.
+   virtual void out(TGString toLog) = 0;
+};
+#endif

@@ -1,0 +1,19 @@
+#ifndef _TCPCOM_Arduino_h_
+#define _TCPCOM_Arduino_h_
+
+#define KENNBYTE      254
+#define PACKETGROESSE 8   // Daten OHNE kennungsbyte
+
+class TCPCOM_Arduino
+{
+   unsigned char byteIndex;
+public:
+   TCPCOM_Arduino();
+
+   unsigned char packet[PACKETGROESSE];
+   bool checkPacketAvailable();  // Liest Daten und liefert true, wenn Packetda. Beim n�chsten Aufruf wird Packet ueberschrieben
+};
+
+
+#endif
+ 

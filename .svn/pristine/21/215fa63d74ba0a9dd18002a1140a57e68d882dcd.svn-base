@@ -1,0 +1,30 @@
+#include "BufferedThreadsaveLogDevice.h"
+#include "Log.h"
+#include <windows.h>
+
+BufferedThreadsaveLogDevice::BufferedThreadsaveLogDevice()
+{
+   mutexAccessBlocked = false;
+}
+
+void BufferedThreadsaveLogDevice::out(TGString logText)
+{
+   while (mutexAccessBlocked);
+   mutexAccessBlocked = true;
+
+   derText += logText;
+
+   mutexAccessBlocked = false;
+}
+
+TGString BufferedThreadsaveLogDevice::getText()
+{
+   while (mutexAccessBlocked);
+   mutexAccessBlocked = true;
+
+   TGString returnText = derText;
+   derText = "";
+
+   mutexAccessBlocked = false;
+   return returnText;
+}

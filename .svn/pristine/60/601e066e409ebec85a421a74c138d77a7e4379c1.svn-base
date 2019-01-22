@@ -1,0 +1,36 @@
+#ifndef _TMonitorWindow_h_
+#define _TMonitorWindow_h_
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include <ComCtrls.hpp>
+
+#define MAX_CONTENT_LENGTH 1000000
+
+//---------------------------------------------------------------------------
+class TMonitorWindow : public TForm
+{
+__published:	// Von der IDE verwaltete Komponenten
+        TRichEdit *RichEdit1;
+        TButton *Button1;
+        TButton *Button2;
+        void __fastcall Button1Click(TObject *Sender);
+        void __fastcall Button2Click(TObject *Sender);
+        void __fastcall FormShow(TObject *Sender);
+        void __fastcall FormResize(TObject *Sender);
+private:	// Anwender-Deklarationen
+        AnsiString theContent;
+        int maxContentLength;
+public:		// Anwender-Deklarationen
+        __fastcall TMonitorWindow(TComponent* Owner);
+        void addText(const char* line);
+        void clear();
+        void showContent();
+        void setMaxContentLength(int maxContentLength){this->maxContentLength = maxContentLength;};
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TMonitorWindow *MonitorWindow;
+//---------------------------------------------------------------------------
+#endif

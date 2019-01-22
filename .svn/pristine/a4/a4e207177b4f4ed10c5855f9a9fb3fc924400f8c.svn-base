@@ -1,0 +1,65 @@
+#include "AddressFamilyInternetSocketHelper.h"
+
+void AddressFamilyInternetSocketHelper::clearSocketAddressIn(SOCKADDR_IN* winSocketAddress)
+{
+   memset(winSocketAddress, 0 ,sizeof(SOCKADDR_IN));           // Daten löschen
+}
+
+void AddressFamilyInternetSocketHelper::initSocketAddressIn(SOCKADDR_IN* winSocketAddress, const char* address, int port)
+{
+   AddressFamilyInternetSocketHelper::clearSocketAddressIn(winSocketAddress);
+   winSocketAddress->sin_family      = AF_INET;                  // auf IP stellen
+   winSocketAddress->sin_port        = htons(port);              // Port einstellen
+   if (address != 0)
+   {
+      winSocketAddress->sin_addr.s_addr = inet_addr(address); // Zieladresse einstellen
+   }
+   else
+   {
+      winSocketAddress->sin_addr.s_addr = ADDR_ANY;           // Verbindung zu jeder IP zulassen
+   }
+}
+
+int /*SOCKET*/ AddressFamilyInternetSocketHelper::createSocketStreamTCP()
+{
+   SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+   if (s == INVALID_SOCKET)
+   {
+      int x = WSAGetLastError();
+      throw "INVALID_SOCKET";
+   }
+
+   bool b_true = true;
+   setsockopt( s,            // handler,
+               SOL_SOCKET,   // level,
+               SO_REUSEADDR, // option name,
+               (char*) &b_true, // true
+               sizeof(b_true) );
+   return s;
+}
+
+int /*SOCKET*/ AddressFamilyInternetSocketHelper::createSocketDGramUDP()
+{
+   SOCKET s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+   bool b_true = true;
+   setsockopt( s,            // handler,
+               SOL_SOCKET,   // level,
+               SO_REUSEADDR, // option name,
+               (char*) &b_true, // true
+               sizeof(b_true) );
+   return s;
+}
+
+void AddressFamilyInternetSocketHelper::tcpSocketInitBindAndListen(int tcpSocketHander, int listenPort)
+{
+   // Socket initialisieren
+   SOCKADDR_IN winSocketAddress;
+   AddressFamilyInternetSocketHelper::initSocketAddressIn(&winSocketAddress, 0, listenPort); // 0 = AcceptAnyAddress
+
+   // Socket an den Port binden und lauschen
+   bind(tcpSocketHander, (SOCKADDR*)&winSocketAddress, sizeof(SOCKADDR_IN));
+   listen(tcpSocketHander, SOMAXCONN); //10 verbindungen dürfen maximal ausstehend sein
+};
+
+

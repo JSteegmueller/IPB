@@ -1,0 +1,58 @@
+#include "App_Minimal.h"
+#include "Arduino.h"
+#include "TimeBlockFilter.h"
+#include "BlumenServer.h"
+#include "ByteBuffer.h"
+
+
+// http://www.roboternetz.de/community/threads/65187-Tutorial-Erstellen-einer-Arduino-Bibliothek
+
+unsigned char timer;
+BlumenServer derBlumenServer;
+
+
+
+
+
+
+
+// Beim Programmstart vor dem Booten
+App_Minimal::App_Minimal()
+{
+}
+
+// Beim Programmstart nach dem Booten
+void App_Minimal::appSetup()
+{
+  derBlumenServer.begin();
+  timer = setTimerInterrupt(10000000);
+
+
+
+  // Open serial communications and wait for port to open:
+  while (!Serial)
+  {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+
+}
+
+// Nach appSetup und dann immer ca 15000 mal pro Sekunde
+void App_Minimal::appLoop()
+{
+  derBlumenServer.loop();
+}
+
+// Wird immer dann aufgerufen
+void App_Minimal::appEvent(int idEvent)
+{
+  if (idEvent == timer)
+  {
+    ByteBuffer einByteBuffer;
+
+    einByteBuffer.copy_n_Byte(0, 0, 9, (unsigned char*)"HALLO123");
+    einByteBuffer.setValidBytes(9);
+
+    derBlumenServer.sendData(&einByteBuffer);
+  }
+}

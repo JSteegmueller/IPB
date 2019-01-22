@@ -1,0 +1,375 @@
+#include "App_Base.h"  // Version 2 (13. Maerz 2016)
+#include <Arduino.h>
+#include "ArduinoTimer.h"
+#include "PulsWeitenModulator.h"
+#include "Errorcodes.h"
+#include "ChatterPin.h"
+
+#ifdef INCLUDE_USB_TCP
+  #include "ByteBuffer.h"
+  #include "ByteArray2LongIntAndBack.h"
+  #include "TCPCOM_Arduino.h"
+#endif
+
+#define HEARTBEATMILLIS      1000
+#define HEARTBEATMILLISERROR 4000  // (2 + maxErrID) * 380
+
+//#include "Log.h"
+
+unsigned char swapLightOn[MAX_ANZAHL_PINS];
+
+PulsWeitenModulator derHeartBeatPWM;
+
+unsigned char App_Base::boardID;
+unsigned char App_Base::pinHeartbeat;
+unsigned char App_Base::anzahlErzeugterEvents;
+App_Base*     App_Base::dieAppMitPininterruptHandler;
+unsigned char App_Base::attachInterruptFunctionHandler_PinInterruptID;
+
+void App_Base::attachInterruptFunctionHandler()
+{
+  dieAppMitPininterruptHandler->event(attachInterruptFunctionHandler_PinInterruptID);
+}
+
+App_Base::App_Base()
+{
+  dieAppMitPininterruptHandler = this;
+  boardID                      = 0;
+  pinHeartbeat                 = 0;
+  anzahlErzeugterEvents        = 1; // Event 0 ist reserviert
+  eventHeartbeatTimer          = 0;
+  theErrorID                   = ERRCODE__NO_ERROR;
+  hardwareInterruptID_Pin2     = 0;
+  hardwareInterruptID_Pin3     = 0;
+
+  hardwareInterruptID_Pin2 = createNewEvent();
+  hardwareInterruptID_Pin3 = createNewEvent();
+
+  for (unsigned char i = 0; i < MAX_ANZAHL_TIMERS ; i++)
+  {
+    dieArduinoTimer[i] = 0;
+  }
+
+  for (unsigned char i = 0; i < MAX_ANZAHL_PINS ; i++)
+  {
+    diePinInterrupts[i] = 0;
+  }
+
+  for (int i=0; i<MAX_ANZAHL_PINS; i++)
+  {
+     swapLightOn[i]=0;
+  }
+
+#ifdef INCLUDE_USB_TCP
+   receiveBuffer_USB_TCP = new ByteBuffer();
+   eventReceiveUSB = createNewEvent();  // Wenn dieses appEvent ausgelöst wird, dann stehen Empfangsdaten in receiveBuffer_USB_TCP bereit.
+#endif
+
+}
+
+void App_Base::setup()
+{
+  setHeartBeatPin(13);
+  appSetup();
+}
+
+void App_Base::loop()
+{
+  for (unsigned char i = 0; i < MAX_ANZAHL_PINS; i++)
+  {
+    //    Log::out(S_+"i:"+i);
+    if ( diePinInterrupts[i] != 0)
+    {
+      if ( diePinInterrupts[i]->checkEvent() )
+      {
+        event( diePinInterrupts[i]->getID() );
+      }
+    }
+  }
+
+  for (unsigned char i = 0; i < MAX_ANZAHL_TIMERS; i++)
+  {
+    if ( dieArduinoTimer[i] != 0)
+    {
+      if (dieArduinoTimer[i]->checkSwapChange())
+      {
+        event(dieArduinoTimer[i]->getID());
+        if (dieArduinoTimer[i]->getSwapsRemaining() == 0)
+        {
+          stopTimerInterrupt(dieArduinoTimer[i]->getID());
+        }
+      }
+    }
+  }
+
+  appLoop();
+}
+
+void App_Base::slowpulse(int pin)
+{
+  pinMode(pin, OUTPUT);
+  int m = 50;
+  for (int i = 1; i < m; i++)
+  {
+    for (int q = 0; q < 10; q++)
+    {
+      digitalWrite(pin, 1);
+      delayMicroseconds(i * i);
+      digitalWrite(pin, 0);
+      delayMicroseconds(m * m - i * i);
+    }
+  }
+  digitalWrite(pin, 0);
+}
+
+unsigned char App_Base::getBoardID()
+{
+  return boardID;
+}
+
+unsigned char App_Base::getBoardID(unsigned char lsb_pin, unsigned char numberOfPins)
+{
+  boardID = 0;
+  while (numberOfPins > 0)
+  {
+    numberOfPins--;
+    pinMode(lsb_pin + numberOfPins, INPUT_PULLUP);
+    boardID |= (digitalRead(lsb_pin + numberOfPins) << numberOfPins);
+  }
+  return boardID;
+}
+
+void App_Base::blinkXTimes(unsigned char pin, unsigned char xTimes)
+{
+  unsigned int  zykluszeit = 400; // darunter für Auge schwer lesbar
+  unsigned char einzeit = 40;
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, 0);
+  delay(zykluszeit);
+  while (xTimes > 0)
+  {
+    digitalWrite(pin, 1);
+    delay(einzeit);
+    digitalWrite(pin, 0);
+    delay(zykluszeit-einzeit);
+    xTimes--;
+  }
+}
+
+void App_Base::event(int idEvent)
+{
+  if (idEvent == eventHeartbeatTimer)
+  {
+    if (theErrorID == ERRCODE__NO_ERROR)
+    {
+       digitalWrite(pinHeartbeat, derHeartBeatPWM.checkPWM());
+    }
+    else
+    {
+       blinkXTimes(pinHeartbeat, theErrorID);  
+    }
+  }
+  else
+  {
+    appEvent(idEvent);
+  }
+}
+
+void App_Base::setError(unsigned char errorID)
+{
+  if (theErrorID == ERRCODE__NO_ERROR)
+  {
+    resetTimerInterrupt(eventHeartbeatTimer, (unsigned long)HEARTBEATMILLISERROR * (unsigned long)1000); // Laeuft jetzt nicht mehr über PWM
+    theErrorID = errorID;
+  }
+}
+
+unsigned char App_Base::createNewEvent()
+{
+  anzahlErzeugterEvents++;
+  return anzahlErzeugterEvents - 1;
+}
+
+void App_Base::setByte(unsigned char firstPin, unsigned char bitmuster, bool setPinModeOutput)
+{
+  setHalfbyte(firstPin,   bitmuster,    setPinModeOutput);
+  setHalfbyte(firstPin+4, bitmuster>>4, setPinModeOutput);
+}
+
+void App_Base::setHalfbyte(unsigned char firstPin, unsigned char bitmuster, bool setPinModeOutput)
+{
+  unsigned char i;
+  if (setPinModeOutput == true)
+  {
+    for (i = firstPin; i < firstPin + 4; i++)
+    {
+      pinMode(i, OUTPUT);
+    }
+  }
+
+  unsigned char maske = 1;
+  for (i = firstPin; i < firstPin + 4; i++)
+  {
+    digitalWrite(i, (bitmuster & maske) >> (i - firstPin));
+    maske = maske << 1;
+  }
+}
+
+void App_Base::setHeartBeatPin(unsigned char pin)
+{
+  if (pin == 0)
+  {
+    stopTimerInterrupt(eventHeartbeatTimer);
+    eventHeartbeatTimer  = 0;
+    pinHeartbeat = 0;
+  }
+  else
+  {
+    pinMode(pin, OUTPUT); // immer setzen!
+    pinHeartbeat = pin;
+    derHeartBeatPWM.setPWM_OnSteps_AllSteps(1, 10);
+    eventHeartbeatTimer = setTimerInterrupt( (unsigned long)HEARTBEATMILLIS * (unsigned long)100);
+  }
+}
+
+unsigned char App_Base::setPinInterrupt( unsigned char pin,
+    unsigned char pinmode,
+    unsigned char trigger_UpDnAny,
+    bool          useHardwareInterrupt ,
+    unsigned long sperrzeitMikroSec    ,
+    unsigned char n                    ,
+    unsigned char outOfm               )
+{
+  pinMode(pin, pinmode);
+
+  if (useHardwareInterrupt == true)
+  {
+    // Auf Arduino-Werte anpassen
+    if (trigger_UpDnAny == TRIGGER_UP)  trigger_UpDnAny = RISING;
+    if (trigger_UpDnAny == TRIGGER_DN)  trigger_UpDnAny = FALLING;
+    if (trigger_UpDnAny == TRIGGER_ANY) trigger_UpDnAny = CHANGE;
+
+    if (pin == 2)
+    {
+      attachInterruptFunctionHandler_PinInterruptID = hardwareInterruptID_Pin2; 
+      attachInterrupt(0, attachInterruptFunctionHandler, trigger_UpDnAny);
+      return attachInterruptFunctionHandler_PinInterruptID;
+    }
+    else if (pin == 3)
+    {
+      attachInterruptFunctionHandler_PinInterruptID = hardwareInterruptID_Pin3; 
+      attachInterrupt(1, attachInterruptFunctionHandler, trigger_UpDnAny);
+      return attachInterruptFunctionHandler_PinInterruptID;
+    }
+    else
+    {
+      setError(ERRCODE__APPBASE_SETPININTERRUPT_PIN_NOT_ALLOWED);
+      return 0;
+    }
+
+  }
+  else
+  {
+    unsigned char gesuchterIndex;
+    for (gesuchterIndex = 0; gesuchterIndex < MAX_ANZAHL_PINS; gesuchterIndex++)
+    {
+      if (diePinInterrupts[gesuchterIndex] == 0) break;
+    }
+
+    if (gesuchterIndex == MAX_ANZAHL_PINS) return 0;
+
+    diePinInterrupts[gesuchterIndex]
+      = new ChatterPin(pin,
+                       trigger_UpDnAny,
+                       sperrzeitMikroSec,
+                       n,
+                       outOfm);
+    diePinInterrupts[gesuchterIndex]->setID(createNewEvent());
+    return diePinInterrupts[gesuchterIndex]->getID();
+  }
+}
+
+void App_Base::stopPinInterrupt(unsigned char interruptID)
+{
+  if (interruptID == hardwareInterruptID_Pin2)
+  {
+    detachInterrupt(0);  // Interrupt fuer Pin 2
+    hardwareInterruptID_Pin2 = 0;
+  }
+  else if (interruptID == hardwareInterruptID_Pin3)
+  {
+    detachInterrupt(1);  // Interrupt fuer Pin 3
+    hardwareInterruptID_Pin3 = 0;
+  }
+  else
+  {
+    unsigned char gesuchterIndex;
+    for (gesuchterIndex = 0; gesuchterIndex < MAX_ANZAHL_PINS; gesuchterIndex++)
+    {
+      if (diePinInterrupts[gesuchterIndex]->getID() == interruptID) break;
+    }
+
+    if (gesuchterIndex == MAX_ANZAHL_PINS) return;
+
+    delete(diePinInterrupts[gesuchterIndex]);
+    diePinInterrupts[gesuchterIndex] = 0;
+  }
+}
+
+unsigned char App_Base::setTimerInterrupt(unsigned long int mikroSec, unsigned int nTimes)
+{
+  unsigned char gesuchterIndex;
+  for (gesuchterIndex = 0; gesuchterIndex < MAX_ANZAHL_TIMERS; gesuchterIndex++)
+  {
+    if (dieArduinoTimer[gesuchterIndex] == 0) break;
+  }
+
+  if (gesuchterIndex == MAX_ANZAHL_TIMERS) return 0;
+
+  dieArduinoTimer[gesuchterIndex] = new ArduinoTimer();
+  dieArduinoTimer[gesuchterIndex]->setIntervalTimeMicroSec(mikroSec, nTimes);
+  dieArduinoTimer[gesuchterIndex]->setID(createNewEvent());
+  return dieArduinoTimer[gesuchterIndex]->getID();
+}
+
+void App_Base::stopTimerInterrupt(unsigned char interruptID)
+{
+  unsigned char gesuchterIndex;
+  for (gesuchterIndex = 0; gesuchterIndex < MAX_ANZAHL_TIMERS; gesuchterIndex++)
+  {
+    if (dieArduinoTimer[gesuchterIndex]->getID() == interruptID) break;
+  }
+
+  if (gesuchterIndex == MAX_ANZAHL_TIMERS) return;
+
+  delete(dieArduinoTimer[gesuchterIndex]);
+  dieArduinoTimer[gesuchterIndex] = 0;
+}
+
+void App_Base::resetTimerInterrupt(unsigned char interruptID, unsigned long int mikroSec, unsigned int nEvents)
+{
+  unsigned char gesuchterIndex;
+  for (gesuchterIndex = 0; gesuchterIndex < MAX_ANZAHL_TIMERS; gesuchterIndex++)
+  {
+    if (dieArduinoTimer[gesuchterIndex] != 0)
+    {
+       if (dieArduinoTimer[gesuchterIndex]->getID() == interruptID) break;
+    }
+  }
+
+  if (gesuchterIndex == MAX_ANZAHL_TIMERS)
+  {
+    setError(ERRCODE__APPBASE_EVENT_ID_DOES_NOT_EXIST);
+    return;
+  }
+
+  dieArduinoTimer[gesuchterIndex]->setIntervalTimeMicroSec(mikroSec, nEvents);
+}
+
+void App_Base::swapLight(unsigned char pin)
+{
+  digitalWrite(pin, swapLightOn[pin]);
+  swapLightOn[pin] = 1 - swapLightOn[pin];
+}
+
+

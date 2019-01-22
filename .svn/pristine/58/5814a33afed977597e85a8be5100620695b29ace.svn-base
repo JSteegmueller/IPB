@@ -1,0 +1,38 @@
+#ifndef _LCD_AbstractTransmiter_h_
+#define _LCD_AbstractTransmiter_h_
+
+// Pin denotiation:
+#define LCD_RSPIN_INSTRUCTION 0   // The target Register if data is sent to the display 
+#define LCD_RSPIN_DATA        1
+#define LCD_RWPIN_READ        1   // Actually we don't use READ
+#define LCD_RWPIN_WRITE       0
+#define LCD_E_PULSE_READY     0   //      |----|
+#define LCD_E_PULSE_RUNNING   1   //   ---|    |----
+#define PIN_NOT_USED          255 // Marks a pin as unused. This Pin is ignored by any part of the software.  
+
+class LCD_AbstractTransmiter
+{
+  public:
+    // Must be implemented by the deriving class:
+    virtual void setValueEnableDataPin(unsigned char enableDisable             ) = 0;
+    virtual void setDataPins          (unsigned char data4or8Bit               ) = 0;
+    virtual void setValueRWPin        (unsigned char readWrite                 ) = 0;
+    virtual void setValueRSPin        (unsigned char registerSelection         ) = 0;
+
+    void sendByte       (unsigned char value, unsigned char instructionOrData){sendByteAndWait(value, instructionOrData, 0);};
+    void sendByteAndWait(unsigned char value, unsigned char instructionOrData, unsigned int microseconds);
+    void sendBits       (unsigned char value){sendBitsAndWait(value, 0);};
+    void sendBitsAndWait(unsigned char value, unsigned int microseconds);
+    bool uses4Bit();    // Get the transmission mode
+   
+  protected:
+    void sendPulse(void);
+
+    bool          use4Bit;      // Transmission mode, must be set in DerivedClass::init(...) 
+    unsigned char rs_pin;       // Register Select Pin; LCD_REG_INSTRUCTION or LCD_REG_DATA or LCD_RSPIN_DATA
+    unsigned char rw_pin;       // LCD_RWPIN_WRITE or LCD_RWPIN_READ
+    unsigned char e_pin;        // LCD_E_PULSE_LOW or LCD_E_PULSE_HIGH; Data valid on falling edge. Execute the data processing on falling edge.
+    unsigned char data_pin[8];  // The arduino pinnumbers for LCD_D0, LCD_D1 ... LCD_D8. If 4PinMode: data_pin[4..7] ignored.  
+};
+
+#endif

@@ -1,0 +1,47 @@
+#include "App_Minimal.h"
+#include <Arduino.h>
+
+int pwmWert = 128;
+int ereignisPin11;
+int ereignisPin12;
+
+// Beim Programmstart vor dem Booten
+App_Minimal::App_Minimal()
+{  // 
+   // Hier nichts schreiben!
+}  // 
+
+// Beim Programmstart nach dem Booten
+void App_Minimal::appSetup()
+{
+  pinMode(3, OUTPUT);
+  analogWrite(3, pwmWert);
+  ereignisPin11 = setPinInterrupt(11, INPUT_PULLUP, TRIGGER_UP);
+  ereignisPin12 = setPinInterrupt(12, INPUT_PULLUP, TRIGGER_UP);
+}
+
+// Nach appSetup und dann immer ca 15000 mal pro Sekunde
+void App_Minimal::appLoop()
+{
+  double messwertA0 = analogRead(A1); // 0...1023  --> 0...5V
+
+  messwertA0 = messwertA0 * 5.0 / 1023.0;
+  Serial.println(messwertA0);
+}
+
+// Hier werden Ereignisse bearbeitet
+void App_Minimal::appEvent(int idEvent)
+{
+  if (idEvent == ereignisPin11)
+  {
+     pwmWert = pwmWert - 4;
+  }
+  
+  if (idEvent == ereignisPin12)
+  {
+     pwmWert = pwmWert + 4;
+  }
+  
+  analogWrite(3, pwmWert);
+}
+

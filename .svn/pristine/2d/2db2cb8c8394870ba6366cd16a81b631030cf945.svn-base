@@ -1,0 +1,89 @@
+#include "LCD_I2C_PCF8574_Transmiter.h"
+#include <Arduino.h>
+
+#include "I2C.h"
+////////////////////////////////////////////
+// I2C-Pins
+////////////////////////////////////////////
+//DataMask B00001111  // 4 Bit Data
+#define En B00010000  // Enable bit
+#define Rw B00100000  // Read/Write bit
+#define Rs B01000000  // Register select bit
+#define BL 0x08  // Backlight bit
+
+void LCD_I2C_PCF8574_Transmiter::init(
+  unsigned char rs,
+  unsigned char en,
+  unsigned char d0,
+  unsigned char d1,
+  unsigned char d2,
+  unsigned char d3)
+{
+  // SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
+  // according to datasheet, we need at least 40ms after power rises above 2.7V
+  // before sendByteing commands. Arduino can turn on way before 4.5V so we'll wait 50 ms
+  delay(50);
+
+  i2cAddress = (0x27<<1); // set the LCD address to 0x20 - 0x27 
+  myI2CClient = new I2C();
+  myI2CClient->begin();
+  
+  transmitByte(0xFF);
+
+
+  
+  
+  
+  
+  
+  
+  use4Bit     = true;
+  rw_pin      = PIN_NOT_USED;
+  rs_pin      = rs;
+  e_pin       = en;
+  data_pin[0] = d0;
+  data_pin[1] = d1;
+  data_pin[2] = d2;
+  data_pin[3] = d3;
+
+  pinMode(rs_pin, OUTPUT);
+  pinMode(e_pin,  OUTPUT);
+
+  for (int i = 0; i < 4; ++i)
+  {
+    pinMode(data_pin[i], OUTPUT);
+  }
+}
+
+void LCD_I2C_PCF8574_Transmiter::setValueEnableDataPin(unsigned char enableDisable)
+{
+  digitalWrite(e_pin, enableDisable); // activated by the falling edge of a HIGH pulse.
+}
+
+void LCD_I2C_PCF8574_Transmiter::setDataPins(unsigned char data4or8Bit)
+{
+  for (int i = 0; i < (use4Bit ? 4 : 8); i++)
+  {
+    digitalWrite(data_pin[i], ((data4or8Bit >> i) & 0x01));
+  }
+}
+
+void LCD_I2C_PCF8574_Transmiter::setValueRWPin(unsigned char readWrite)
+{
+  if (rw_pin != PIN_NOT_USED)
+  {
+    digitalWrite(rw_pin, readWrite);
+  }
+}
+
+void LCD_I2C_PCF8574_Transmiter::setValueRSPin(unsigned char registerSelection)
+{
+  digitalWrite(rs_pin, registerSelection);
+}
+
+void LCD_I2C_PCF8574_Transmiter::transmitByte(unsigned char oneByte)
+{
+  myI2CClient->beginTransmission(i2cAddress);
+  myI2CClient->write(oneByte);
+  myI2CClient->endTransmission();   
+}

@@ -1,0 +1,20 @@
+#ifndef _FileLogDevice_h
+#define _FileLogDevice_h
+
+#include "LogDevice.h"
+#include "TGString.h"
+
+class FileLogDevice : public LogDevice
+{
+   private: char* mFile;
+
+   public:  FileLogDevice(char* file);
+   public:  ~FileLogDevice();
+
+   public:  void     out(TGString toLog);
+   private: int      print(const char* a);
+};
+
+
+#endif
+ 

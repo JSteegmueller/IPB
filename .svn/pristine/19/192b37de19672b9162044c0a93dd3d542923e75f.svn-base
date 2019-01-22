@@ -1,0 +1,376 @@
+#include "App_Minimal.h"
+#include "Arduino.h"
+
+#define PIN_PUMPE_PLUS  8
+#define PIN_PUMPE_MINUS 7
+#define PIN_HEIZUNG A0
+#define PIN_BLUBBER A1
+#define PIN_TEMPERATURSENSOR_LHO A7
+#define PIN_TEMPERATURSENSOR_RVU A6
+#define PIN_TEMPERATURSENSOR_RHU A3
+#define PIN_ENDSCHALTER 6
+#define PIN_SPEAKER 10
+
+#define PIN_AUFAB_PLUS  11
+#define PIN_AUFAB_MINUS 9
+#define SPEED_AB  100
+#define SPEED_AUF 238
+
+#define TEMPERATUR_ALARM_DELTA       800     // Alarm wenn Delta groesser 8 Grad
+#define TEMPERATUR_ALARM_MAX         5600    // Alarm wenn Temperatur groesser 55 Grad
+
+#define TEMPERATUR_SCHALT_KALT       4000
+#define TEMPERATUR_SCHALT_WARM       4900
+
+#define TEMPERATUR_MIN               1920
+#define TEMPERATUR_MAX               5000
+#define TEMPERATUR_MESSWERT_LHO_LOW  467  
+#define TEMPERATUR_MESSWERT_LHO_HIGH 399
+#define TEMPERATUR_MESSWERT_RHU_LOW  465
+#define TEMPERATUR_MESSWERT_RHU_HIGH 398
+#define TEMPERATUR_MESSWERT_RVU_LOW  460  // 2 Punkte / Grad
+#define TEMPERATUR_MESSWERT_RVU_HIGH 391  // 10 mv / Grad
+                                          // H: 1:1,  L:
+unsigned char idAlarmTimer;
+unsigned char idTemperaturSensorTimer;
+unsigned char idDisplayUndSteuerTimer;
+unsigned char idEndschalter;
+
+// Beim Programmstart vor dem Booten
+App_Minimal::App_Minimal()
+{
+}
+
+// Beim Programmstart nach dem Booten
+void App_Minimal::appSetup()
+{
+  pinMode(PIN_BLUBBER,     OUTPUT);
+  pinMode(PIN_HEIZUNG,     OUTPUT);
+  pinMode(PIN_AUFAB_PLUS,  OUTPUT);
+  pinMode(PIN_AUFAB_MINUS, OUTPUT);
+  digitalWrite(PIN_BLUBBER,     0);
+  digitalWrite(PIN_HEIZUNG,     0);
+  digitalWrite(PIN_AUFAB_PLUS,  0);
+  digitalWrite(PIN_AUFAB_MINUS, 0);
+
+  temperatur_LHO = 2000;  // Start bei 20 Grad
+  temperatur_RVU = 2000;
+  temperatur_RHU = 2000;
+
+  reset();
+
+  idAlarmTimer = setTimerInterrupt(4500);
+  idTemperaturSensorTimer = setTimerInterrupt(50000);
+  idDisplayUndSteuerTimer = setTimerInterrupt(1000000);
+  idEndschalter = setPinInterrupt(PIN_ENDSCHALTER, INPUT_PULLUP, TRIGGER_DN);
+}
+
+void App_Minimal::reset()
+{
+  schaltTemperaturHeizung = TEMPERATUR_SCHALT_KALT;
+  
+  istOben   = false;
+  istUnten  = true;
+  faehrtAuf = false;
+  faehrtAb  = false;
+  moechteHeizen = false;
+  fehlerErkannt = false;
+}
+
+void App_Minimal::appLoop()
+{
+  if (Serial.available())
+  {
+    unsigned char command = Serial.read();
+    Serial.write(command);
+    Serial_println();
+
+    eventCommand(command);
+  }
+}
+
+// Hier werden Ereignisse bearbeitet
+unsigned int swap = 0;
+void App_Minimal::appEvent(int idEvent)
+{
+  if (idEvent == idAlarmTimer)
+  {
+    if (fehlerErkannt == false) return;
+    
+    swap++;
+    if (swap < 160)
+    {
+       if (swap < 80) digitalWrite(PIN_SPEAKER, swap%2);
+    }
+    else
+    {
+       swap = 0;  
+    }
+  }
+  if (idEvent == idTemperaturSensorTimer)
+  {
+    temperaturLesen();
+  }
+  if (idEvent == idDisplayUndSteuerTimer)
+  {
+    datenUebertragen();
+
+    if ((maxTemperatur > TEMPERATUR_ALARM_MAX)||(abs(maxTemperatur-minTemperatur)>TEMPERATUR_ALARM_DELTA))
+    {
+       fehlerErkannt = true;
+    }
+
+    if (fehlerErkannt == true)
+    {
+       heizenAus();
+       return;
+    }
+
+    if (temperatur > 4500)
+    {
+      schaltTemperaturHeizung = TEMPERATUR_SCHALT_WARM;
+    }
+    
+    if(temperatur > schaltTemperaturHeizung)
+    {
+      eventCommand('h');
+    }
+    else if(moechteHeizen)
+    {
+      heizenEin();
+    }
+  }
+  else if (idEvent == idEndschalter)
+  {
+    if (faehrtAb)
+    {
+      istOben   = false;
+      istUnten  = true;
+    }
+    else if (faehrtAuf)
+    {
+      istOben   = true;
+      istUnten  = false;
+    }
+    fahrenStop();
+  }
+}
+
+void App_Minimal::blubberAus()
+{
+  digitalWrite(PIN_BLUBBER, 0);
+}
+
+void App_Minimal::blubberEin()
+{
+  digitalWrite(PIN_BLUBBER, 1);
+}
+
+void App_Minimal::heizenAus()
+{
+  digitalWrite(PIN_HEIZUNG, 0);
+}
+
+void App_Minimal::heizenEin()
+{
+  digitalWrite(PIN_HEIZUNG, 1);
+}
+
+void App_Minimal::temperaturLesen()
+{
+  temperatur_Messwert_LHO = analogRead(PIN_TEMPERATURSENSOR_LHO);
+  temperatur_Messwert_RHU = analogRead(PIN_TEMPERATURSENSOR_RHU);
+  temperatur_Messwert_RVU = analogRead(PIN_TEMPERATURSENSOR_RVU);
+
+  temperatur_LHO += 0.1 * (double)map(temperatur_Messwert_LHO, TEMPERATUR_MESSWERT_LHO_LOW, TEMPERATUR_MESSWERT_LHO_HIGH, TEMPERATUR_MIN, TEMPERATUR_MAX);
+  temperatur_RHU += 0.1 * (double)map(temperatur_Messwert_RHU, TEMPERATUR_MESSWERT_RHU_LOW, TEMPERATUR_MESSWERT_RHU_HIGH, TEMPERATUR_MIN, TEMPERATUR_MAX);
+  temperatur_RVU += 0.1 * (double)map(temperatur_Messwert_RVU, TEMPERATUR_MESSWERT_RVU_LOW, TEMPERATUR_MESSWERT_RVU_HIGH, TEMPERATUR_MIN, TEMPERATUR_MAX);
+  temperatur_LHO /= 1.1;
+  temperatur_RHU /= 1.1;
+  temperatur_RVU /= 1.1;
+
+  maxTemperatur = max(max(temperatur_LHO, temperatur_RHU), temperatur_RVU);
+  minTemperatur = min(min(temperatur_LHO, temperatur_RHU), temperatur_RVU);
+  temperatur = (temperatur_LHO + temperatur_RHU + temperatur_RVU ) / 3.0;
+}
+
+size_t App_Minimal::Serial_print(const String &s)
+{
+  return Serial_write((const uint8_t*)s.c_str(), s.length());
+  Serial_write((const uint8_t*)"\n", strlen("\n"));
+}
+
+size_t App_Minimal::Serial_write(const char* buffer)
+{
+  Serial_write((const uint8_t*)buffer, strlen(buffer));
+}
+
+size_t App_Minimal::Serial_write(const uint8_t* buffer, size_t size)
+{
+  size_t n = 0;
+  while (size--) {
+    if (Serial.write(*buffer++)) n++;
+    else break;
+  }
+  return n;
+}
+
+size_t App_Minimal::Serial_printNumber(unsigned long n, uint8_t base)
+{
+  char buf[8 * sizeof(long) + 1]; // Assumes 8-bit chars plus zero byte.
+  char *str = &buf[sizeof(buf) - 1];
+
+  *str = '\0';
+
+  // prevent crash if called with base == 1
+  if (base < 2) base = 10;
+
+  do {
+    unsigned long m = n;
+    n /= base;
+    char c = m - base * n;
+    *--str = c < 10 ? c + '0' : c + 'A' - 10;
+  } while (n);
+
+  return Serial_write((const uint8_t*) str, strlen(str));
+}
+
+size_t App_Minimal::Serial_println()
+{
+  return Serial_write("\r\n");
+}
+
+void App_Minimal::fahrenAuf()
+{
+  if (istOben) return;
+  faehrtAuf = true;
+  faehrtAb  = false;
+  analogWrite(PIN_AUFAB_PLUS, 255);
+  delay(300);
+  analogWrite(PIN_AUFAB_PLUS, SPEED_AUF);
+  analogWrite(PIN_AUFAB_MINUS, 0);
+}
+
+void App_Minimal::fahrenStop()
+{
+  analogWrite(PIN_AUFAB_PLUS,  0);
+  analogWrite(PIN_AUFAB_MINUS, 0);
+  faehrtAuf = false;
+  faehrtAb  = false;
+}
+
+void App_Minimal::fahrenAb()
+{
+  if (istUnten) return;
+  faehrtAb = true;
+  faehrtAuf = false;
+  analogWrite(PIN_AUFAB_MINUS, SPEED_AB + 50);
+  delay(100);
+  analogWrite(PIN_AUFAB_MINUS, SPEED_AB);
+  analogWrite(PIN_AUFAB_PLUS, 0);
+}
+
+unsigned int tt = 100;
+void App_Minimal::datenUebertragen()
+{
+  Serial_printNumber(temperatur_Messwert_LHO);
+  Serial_print(" ");
+  Serial_printNumber(temperatur_Messwert_RHU);
+  Serial_print(" ");
+  Serial_printNumber(temperatur_Messwert_RVU);
+  Serial_println();
+
+  Serial_printNumber(temperatur_LHO);
+  Serial_print(" ");
+  Serial_printNumber(temperatur_RHU);
+  Serial_print(" ");
+  Serial_printNumber(temperatur_RVU);
+  Serial_println();
+
+  Serial_printNumber(temperatur);
+  Serial_print(" ");
+  Serial_printNumber(minTemperatur);
+  Serial_print(" ");
+  Serial_printNumber(maxTemperatur);
+  Serial_print(" ");
+  Serial_printNumber(maxTemperatur - minTemperatur);
+  Serial_println();
+  Serial_println();
+}
+
+void App_Minimal::eventCommand(unsigned char command)
+{
+  if (command == 'R')
+  {
+    reset();
+  }
+  else if (command == 'B')
+  {
+    blubberEin();
+  }
+  else if (command == 'b')
+  {
+    heizenAus();
+    blubberAus();
+  }
+  else if (command == 'H')
+  {
+    moechteHeizen = true;
+    blubberEin();
+  }
+  else if (command == 'h')
+  {
+    moechteHeizen = false;
+    heizenAus();
+  }
+  else if (command == 'u')
+  {
+    blubberAus();
+    heizenAus();
+    fahrenAuf();
+  }
+  else if (command == 'x')
+  {
+    fahrenStop();
+  }
+  else if (command == 'd')
+  {
+    fahrenAb();
+  }
+  else if (command == 'D')
+  {
+    istUnten = false;
+    fahrenAb();
+  }
+  else if (command == 'P')
+  {
+    pumpeEin();
+  }
+  else if (command == 'Q')
+  {
+    pumpeEinRevers();
+  }
+  else if (command == 'p')
+  {
+    pumpeAus();
+  }
+}
+
+void App_Minimal::pumpeEin()
+{
+  digitalWrite(PIN_PUMPE_PLUS,  1);
+  digitalWrite(PIN_PUMPE_MINUS, 0);
+}
+
+void App_Minimal::pumpeEinRevers()
+{
+  digitalWrite(PIN_PUMPE_PLUS,  0);
+  digitalWrite(PIN_PUMPE_MINUS, 1);
+}
+
+void App_Minimal::pumpeAus()
+{
+  digitalWrite(PIN_PUMPE_PLUS,  0);
+  digitalWrite(PIN_PUMPE_MINUS, 0);
+}
+

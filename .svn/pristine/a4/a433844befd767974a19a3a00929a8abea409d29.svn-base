@@ -1,0 +1,37 @@
+#ifndef _ConnectionSocket_h_
+#define _ConnectionSocket_h_
+
+#include "Thread.h"
+#include "TGString.h"
+#include <windows.h>
+#include "TCP_Socket_ClassDeclarations.h"
+
+static const int CONECTION_BUFFER_LENGTH = 1025;
+
+class ConnectionSocket : public Thread
+{
+private:
+   // this method starts with the new forked thread
+   void newRun(void* runParameter);
+
+   char        buffer[CONECTION_BUFFER_LENGTH];
+
+   // Socketeigenschaften
+   int         winSocketHandler;
+   int         family;
+   int         clientPort;
+   char*       clientAddress;
+
+   // Objekt an- und abmelden, Callbackfunktionalität
+   TCP_Server* pDerServerProzessHandler;
+
+public:
+   ConnectionSocket(int einSocket, SOCKADDR_IN* clientAddressInformation, TCP_Server* pEinServerProzessHandler);
+   bool isActive(){return (winSocketHandler != 0);};
+   bool sendData(void* data, int anzahlBytes);
+   void close();
+   TGString toString();
+};
+#endif
+
+

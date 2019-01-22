@@ -1,0 +1,22 @@
+#include "ClientSocket.h"
+#include "AddressFamilyInternetSocketHelper.h"
+
+void ClientSocket::initAndConnectToServer(const char* serverAddress, int serverPort)
+{
+   // Socket initialisieren
+   SOCKADDR_IN winSocketAddress;
+   AddressFamilyInternetSocketHelper::initSocketAddressIn(&winSocketAddress, serverAddress, serverPort);
+   winSocketHandler = AddressFamilyInternetSocketHelper::createSocketStreamTCP();
+
+   // Zum Server connecten
+   if ( connect(winSocketHandler, (SOCKADDR*) &winSocketAddress, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
+   {
+      throw "Could not connect to server";
+   }
+}
+
+bool ClientSocket::sendData(void* data, int anzahlBytes)
+{
+   return (send(winSocketHandler, (const char*)data, anzahlBytes, 0) != -1);
+}
+

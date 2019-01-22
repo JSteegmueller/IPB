@@ -1,0 +1,48 @@
+#include "MyServer.h"
+#include "WindowsSocketApi.h"
+
+//#define __LOG_MyServer__
+
+#ifdef __LOG_MyServer__
+#include "Log.h"
+#endif
+
+MyServer::MyServer()
+:TCP_Server()
+{
+   #ifdef __LOG_MyServer__
+   Log::out("E MyServer()");
+   #endif
+
+   WindowsSocketAPI::startup();
+
+   #ifdef __LOG_MyServer__
+   Log::out("X MyServer()");
+   #endif
+}
+
+void MyServer::dataReceived(void* connectionSocket, char* data, int laenge, char* clientAdresse, int clientPort)
+{
+   #ifdef __LOG_MyServer__
+   Log::out(S_ + "E MySocket" + "(" + (int)this + ") : dataReceived" + "( char* data = "+data+", int laenge = "+laenge+" )");
+   #endif
+
+   this->connectionSocket = connectionSocket;
+
+   // Sicher stellen dass da nix passiert!
+   try
+   {
+   if (laenge < 9999)
+   {
+      data[laenge] = 0; // Testtext könnte zerschnippelt sein.
+      buffer = buffer + "\n" + data + " " + clientAdresse + ":" + clientPort;
+   }
+   }
+   catch(...){}
+
+   #ifdef __LOG_MyServer__
+   Log::out(S_ + "X MySocket" + "(" + (int)this + ") : dataReceived" + "()");
+   #endif
+}
+
+ 

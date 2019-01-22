@@ -1,0 +1,63 @@
+#include "App_Minimal.h"
+#include "Arduino.h"
+
+
+int event2;
+int event3;
+int event7;
+int event10;
+
+
+// Beim Programmstart vor dem Booten
+App_Minimal::App_Minimal()
+{  // 
+   // Hier nichts schreiben!
+}  // 
+
+// Beim Programmstart nach dem Booten
+void App_Minimal::appSetup()
+{
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+
+  event2 = setTimerInterrupt(200000);
+  event3 = setTimerInterrupt(300000);
+  /*
+  event7 = setTimerInterrupt(700000);
+  event10 = setTimerInterrupt(1000000);
+*/
+}
+
+// Nach appSetup und dann immer ca 15000 mal pro Sekunde
+void App_Minimal::appLoop()
+{
+}
+
+// Hier werden Ereignisse bearbeitet
+void App_Minimal::appEvent(int idEvent)
+{
+  if( idEvent == event2);
+  {
+    swapLight(8);
+  }
+  
+  /*
+  if( idEvent == event3);
+  {
+    swapLight(9);
+  }
+  if( idEvent == event7);
+  {
+    swapLight(10);
+  }
+  if( idEvent == event10);
+  {
+    swapLight(7);
+  }
+*/
+
+
+}
+

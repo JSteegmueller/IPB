@@ -1,0 +1,48 @@
+object MonitorWindow: TMonitorWindow
+  Left = 372
+  Top = 132
+  Width = 321
+  Height = 538
+  Caption = 'MonitorWindow'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  OnResize = FormResize
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object RichEdit1: TRichEdit
+    Left = 0
+    Top = -1
+    Width = 306
+    Height = 482
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Color = clYellow
+    ScrollBars = ssBoth
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 3
+    Top = 483
+    Width = 121
+    Height = 15
+    Anchors = [akLeft, akBottom]
+    Caption = 'Inhalt löschen'
+    TabOrder = 1
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 180
+    Top = 483
+    Width = 121
+    Height = 15
+    Anchors = [akRight, akBottom]
+    Caption = 'Nach "C:\monitor.log"'
+    TabOrder = 2
+    OnClick = Button2Click
+  end
+end

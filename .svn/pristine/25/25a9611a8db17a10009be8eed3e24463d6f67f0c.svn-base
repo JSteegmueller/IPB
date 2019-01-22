@@ -1,0 +1,20 @@
+#ifndef _Log_h_
+#define _Log_h_
+
+#include "TGString.h"
+#define S_ TGString()   // Um einen Text mit TG-String zu beginnen: out(S_ + "Hallo" + "Du")
+
+class LogDevice;
+class Log
+{
+   private: static int mLevel;
+   private: static TGString buildlevel();
+   private: static LogDevice*  myLogDevice;
+   private: static bool useProcessID;
+
+   public:  static void out (TGString logText, void* currentObject = 0);
+   public:  static void setLogDevice(LogDevice*  dev, bool useProcessID = false);
+   public:  static LogDevice* getLogDevice(){return myLogDevice;};
+};
+
+#endif

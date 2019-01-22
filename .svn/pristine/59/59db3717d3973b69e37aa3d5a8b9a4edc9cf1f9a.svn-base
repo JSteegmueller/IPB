@@ -1,0 +1,19 @@
+#ifndef _ClientSocket_h_
+#define _ClientSocket_h_
+#include <winsock2.h>
+
+#include "TCP_Socket_ClassDeclarations.h"
+static const int CLIENT_BUFFER_LENGTH = 1025;
+
+class ClientSocket
+{
+public:
+   int   winSocketHandler; //SOCKET = UINT_PTR
+   char  buffer[CLIENT_BUFFER_LENGTH];
+   TCP_Client* pDerServerProzessHandler;
+
+   void  initAndConnectToServer(const char* serverAddress, int serverPort);
+   void  disconnectFromServer(){closesocket(winSocketHandler);};
+   bool  sendData(void* data, int anzahlBytes);
+};
+#endif

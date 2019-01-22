@@ -1,0 +1,148 @@
+#include "TCP_Server.h"
+#include "ConnectionSocket.h"
+#include "ConnectionSocketPool.h"
+#include "SystemAPI.h"
+#include <winsock2.h>
+#include "AddressFamilyInternetSocketHelper.h"
+#include "WindowsSocketAPI.h"
+
+#define __LOG_TCP_Server__
+
+#ifdef __LOG_TCP_Server__
+#include "Log.h"
+#endif
+
+TCP_Server::TCP_Server()
+{
+   #ifdef __LOG_TCP_Server__
+   Log::out("E:TCP_Server::TCP_Server()");
+   Log::out(S_+"TCP_Server::TCP_Server()::this=" + (int)this);
+   #endif
+
+   WindowsSocketAPI::startup();
+   connectionSocketPool = new ConnectionSocketPool();
+
+   #ifdef __LOG_TCP_Server__
+   Log::out("X:TCP_Server::TCP_Server()");
+   #endif
+}
+
+void TCP_Server::StartReceive(int listenPort)
+{
+   #ifdef __LOG_TCP_Server__
+   Log::out(S_+"E:TCP_Server::StartReceive(int listenPort="+listenPort+")");
+   #endif
+
+   this->listenPort = listenPort;
+   if (!this->chekExists())
+   {
+      #ifdef __LOG_TCP_Server__
+      Log::out(S_+"E:TCP_Server::StartReceive::threadForkNewRun("+(int)this+")");
+      #endif
+      forkNewRun(this);  // startet threadNewRun(..) in neuem Thread
+   }
+
+   #ifdef __LOG_TCP_Server__
+   Log::out("X:TCP_Server::StartReceive()");
+   #endif
+}
+
+// this method starts with the new forked thread
+void TCP_Server::newRun(void* runParameter)
+{
+   #ifdef __LOG_TCP_Server__
+   Log::out(S_+"E:TCP_Server::threadNewRun(void* runParameter="+(int)runParameter+")");
+   #endif
+
+   TCP_Server* this_TCP_Server=(TCP_Server*)runParameter;
+
+   this_TCP_Server->serverSocketHandler = AddressFamilyInternetSocketHelper::createSocketStreamTCP();
+   AddressFamilyInternetSocketHelper::tcpSocketInitBindAndListen(this_TCP_Server->serverSocketHandler, this_TCP_Server->listenPort);
+
+   while(true) // Dieser Thread wird am Ende gekillt
+   {
+      SOCKADDR_IN clientAddressInformation       ;
+      int         sizeof_clientAddressInformation;
+      AddressFamilyInternetSocketHelper::clearSocketAddressIn(&clientAddressInformation);
+      sizeof_clientAddressInformation = sizeof(SOCKADDR_IN);
+
+      // Achtung: accept ist nur dann "blocking" wenn serverSocketHandler saubere
+      // Daten enthält und wenn sizeof_clientAddressInformation als Übergabeparameter
+      // einen korrekten Wert hat!
+      SOCKET clientSocket = accept( this_TCP_Server->serverSocketHandler,
+                                    (SOCKADDR*)&clientAddressInformation,
+                                    &sizeof_clientAddressInformation );  // IN and OUT Value
+
+      if (serverSocketHandler==0) return; // Könnte beim beenden dieses Threads sein!
+
+      if (clientSocket != INVALID_SOCKET) // == -1
+      {
+         #ifdef __LOG_TCP_Server__
+         Log::out("X:TCP_Server::waitAndAcceptNewConnection(..):Loop creating new ConnectionSocket");
+         #endif
+
+         ConnectionSocket* cs = new ConnectionSocket(clientSocket, &clientAddressInformation, this_TCP_Server);
+
+         this_TCP_Server->connectionSocketPool->deleteAllClosedSockets();
+         cs->forkNewRun(cs); // Neuer Thread kennt sein eigenes Objekt
+         this_TCP_Server->connectionSocketPool->addSocket(cs);
+      }
+      else
+      {
+        // Das darf nicht sein!
+        // int err = WSAGetLastError();
+        // http://msdn.microsoft.com/en-us/library/ms740668%28v=vs.85%29.aspx
+      }
+   }
+
+   // Diese Zeilen dürfen NIE aufgerufen werden!
+   #ifdef __LOG_TCP_Server__
+   Log::out("X:TCP_Server::!!ERROR!! threadNewRun(void* runParameter)");
+   #endif
+}
+
+void TCP_Server::StopReceive()
+{
+   #ifdef __LOG_TCP_Server__
+   Log::out("E:TCP_Server::StopReceive()");
+   #endif
+
+   closesocket(serverSocketHandler);
+   serverSocketHandler = 0;
+
+   this->waitFinished(1000);  // Muss sein, weil blocking
+   this->exitAndFreeStructure(); // Speicher freigeben
+
+   connectionSocketPool->deleteAllSockets();
+   SystemAPI::threadKillAllThreadsExceptThisOfCurrentProcess(); // Client-Sessions killen
+
+   #ifdef __LOG_TCP_Server__
+   Log::out("X:TCP_Server::StopReceive()");
+   #endif
+}
+
+void TCP_Server::sendData(void* connectionSocket, void* data, int anzahlBytes)
+{
+   #ifdef __LOG_TCP_Server__
+   Log::out(S_ + "E:TCP_Server::sendData(void* data, int anzahlBytes="+anzahlBytes+")");
+   #endif
+
+   ConnectionSocket* cs = (ConnectionSocket*)connectionSocket;
+
+   cs->sendData(data, anzahlBytes);
+
+   #ifdef __LOG_TCP_Server__
+   Log::out("E:TCP_Server::sendData(..)");
+   #endif
+}
+
+TCP_Server::~TCP_Server()
+{
+   //////////////////////////////////////////////
+   //Monitoring im Destruktor nicht möglich!
+   //////////////////////////////////////////////
+
+   StopReceive();
+   delete connectionSocketPool; connectionSocketPool = 0;
+}
+

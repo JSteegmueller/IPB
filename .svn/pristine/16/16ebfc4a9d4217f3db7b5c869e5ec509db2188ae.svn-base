@@ -1,0 +1,68 @@
+#include "LCD_HD44780.h"
+#include "LCD_I2C_PCF8574_Transmiter.h"
+#include "LCD_DirectCableTransmiter.h"
+
+LCD_HD44780*               myLCD;
+LCD_DirectCableTransmiter* myTransmitter;
+//LCD_I2C_PCF8574_Transmiter*  myTransmitter;
+
+void setup()
+{
+  myTransmitter = new LCD_DirectCableTransmiter();
+  //  myTransmitter = new LCD_I2C_PCF8574_Transmiter();
+  myTransmitter->init(8, 7, 6, 5, 4, 2);//RS EN D4 D5 D6 D7 // Übertragung im 4-Bit-Mode
+  // RW --> (Read/Write) Masse
+  // A  --> (Anode BackLight-LED) Masse
+  // K  --> (Kathode BackLight-LED) 5V
+  // VO --> (Kontrast) Poti --> 0 bis 5V
+
+  myLCD = new LCD_HD44780(myTransmitter);
+  myLCD->begin(16, 2, true); // columns, rows, erwartet 4BitMode.
+
+  myLCD->blink();
+  myLCD->write("Jugendforscht");
+  //myLCD->noDisplay();
+
+  delay(1000);
+
+  unsigned char charmap[8] =
+  {
+    B00000,
+    B11011,
+    B00000,
+    B00000,
+    B11111,
+    B00000,
+    B00000,
+  };
+
+  myLCD->createChar(1, charmap);
+
+  myLCD->noBlink();
+  myLCD->noCursor();
+  myLCD->setCursor(0, 1);
+  myLCD->write("  --");
+  myLCD->write('[');
+  myLCD->write(1);
+  myLCD->write(']');
+  myLCD->write("--");
+}
+
+void loop()
+{
+  int x = 0;
+
+  while (x < 4)
+  {
+    x++;
+    myLCD->scrollDisplayRight();
+    delay(1000);
+  }
+
+  while (x > 0)
+  {
+    x--;
+    myLCD->scrollDisplayLeft();
+    delay(1000);
+  }
+}

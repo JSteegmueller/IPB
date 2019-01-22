@@ -1,0 +1,72 @@
+#include "Unit2.h"
+#include <vcl.h>
+
+#include "Log.h"
+#include "FileLogDevice.h"
+
+#include "TGString.h"
+
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm1 *Form1;
+
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+        : TForm(Owner)
+{
+   mp_fileLogDevice = new FileLogDevice("client.log");;
+   Log::setLogDevice(mp_fileLogDevice);
+
+   Left=0;
+   Top=0;
+
+   mp_derClient = new MyTCP_Client();
+   mp_derClient->dasAusgabefeld = Label3;
+
+   #ifdef __LOG__
+   Log::out(S_ + "E " + "TForm1" + "(" + (int)this + ") : TForm1" + "()");
+   Log::out(S_ + "X " + "TForm1" + "(" + (int)this + ") : TForm1" + "()");
+   #endif
+}
+//---------------------------------------------------------------------------
+__fastcall TForm1::~TForm1()
+{
+   TGString s;
+   #ifdef __LOG__
+   Log::out(s + "E " + "TForm1" + "(" + (int)this + ") : ~TForm1" + "()");
+   Log::out(s + "X " + "TForm1" + "(" + (int)this + ") : ~TForm1" + "()");
+   #endif
+
+//   delete (mp_fileLogDevice); mp_fileLogDevice = 0;
+   delete (mp_derClient); mp_derClient = 0;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ButtonSendClick(TObject* Sender)
+{
+   #ifdef __LOG__
+   Log::out(S_ + "E " + "TForm1" + "(" + (int)this + ") : ButtonSendClick" + "(TObject* Sender = " + (int)Sender + " )");
+   #endif
+
+   mp_derClient->sendData(this->Edit1->Text.c_str(), this->Edit1->Text.Length()+1);
+
+   #ifdef __LOG__
+   Log::out(S_ + "X " + "TForm1" + "(" + (int)this + ") : ButtonSendClick" + "()");
+   #endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ButtonOpenConnectionClick(TObject *Sender)
+{
+   mp_derClient->initAndConnectToServer(Edit2->Text.c_str(), Edit3->Text.ToInt());
+   mp_derClient->sendData("", 1);
+   Caption = Edit2->Text + ", Port = " + Edit3->Text;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ButtonCloseConnectionClick(TObject *Sender)
+{
+   mp_derClient->disconnectFromServer();
+   Caption = "disconnected";
+}
+//---------------------------------------------------------------------------
+

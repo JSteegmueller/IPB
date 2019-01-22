@@ -1,0 +1,34 @@
+#include "FileLogDevice.h"
+#include <stdio.h>
+#include "Log.h"
+#include <windows.h>
+
+FileLogDevice::FileLogDevice(char* file)
+{
+   mFile = file;
+
+   // anlegen und testen
+   FILE*  pFile = fopen(mFile,"w");
+   fclose(pFile);
+}
+
+void FileLogDevice::out(TGString logText)
+{
+   print( logText.c_str() );
+}
+
+
+
+int FileLogDevice::print(const char* a)
+{
+   FILE* pFile;
+   pFile=fopen(mFile,"a");
+   fprintf(pFile,"%s \n",a);
+   fclose (pFile);
+   return 0;
+}
+
+
+FileLogDevice::~FileLogDevice(void)
+{
+}

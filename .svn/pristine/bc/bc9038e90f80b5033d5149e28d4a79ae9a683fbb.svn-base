@@ -1,0 +1,19 @@
+#ifndef _App_Minimal_h_
+#define _App_Minimal_h_
+#include "App_Base.h"
+
+class App_Minimal : public App_Base
+{
+  public:
+    App_Minimal();
+    void appLoop();
+    void appSetup();
+    void appEvent(int idEvent);
+    void motorStep();
+};
+
+#endif
+
+
+
+

@@ -1,0 +1,39 @@
+#ifndef _AddressFamilyInternetSocketHelper_h_
+#define _AddressFamilyInternetSocketHelper_h_
+
+#include <winsock2.h>
+
+/*
+AF_INET ... Address Family Internet
+  -->connection-oriented type SOCK_STREAM
+  -->connectionless      type SOCK_DGRAM
+*/
+
+/* Info:
+#########################
+http://www.willemer.de/informatik/unix/unprsock.htm
+#########################
+struct sockaddr_in {
+  sa_familiy_t sin_familiy;  // AF_INET
+  in_port_t    sin_port;     // 16-bit TCP or UDP port number
+                             // network byte ordered
+  struct       sin_addr;     // 32-bit IPv4 address
+                             // network byte ordered
+  char         sin_zero[8];
+};
+*/
+
+class AddressFamilyInternetSocketHelper
+{
+   public:
+   // Address = 0 means ADDR_ANY, IN = InterNet
+   static void clearSocketAddressIn(SOCKADDR_IN* winSocketAddress);
+   static void initSocketAddressIn (SOCKADDR_IN* winSocketAddress, const char* address, int port);
+   static int createSocketStreamTCP(); // Returns SOCKET-Handler
+   static int createSocketDGramUDP (); // Returns SOCKET-Handler
+   static void tcpSocketInitBindAndListen(int tcpSocketHander, int listenPort);
+};
+//int serverSocketHandler = AddressFamilyInternetSocketHelper::createSocketStreamTCP();
+
+#endif
+

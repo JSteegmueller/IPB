@@ -1,0 +1,54 @@
+//---------------------------------------------------------------------------
+
+#ifndef Unit1H
+#define Unit1H
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include <ComCtrls.hpp>
+#include <ExtCtrls.hpp>
+
+#include "TCP_Socket/TCP_Socket_ClassDeclarations.h"
+
+#define __USE_LOG_WINDOW__    // not File Log Device
+
+//---------------------------------------------------------------------------
+class TForm1 : public TForm
+{
+__published:	// Von der IDE verwaltete Komponenten
+        TButton *ButtonStartReceive;
+        TButton *ButtonStopReceive;
+        TRichEdit *RichEdit1;
+        TButton *ButtonClear;
+        TButton *Button1;
+        TTimer *Timer1;
+        TTimer *Timer2;
+        TButton *ButtonSend;
+        TButton *Button3;
+        TEdit *EditPort;
+        TRichEdit *RichEditAntwort;
+        void __fastcall ButtonStartReceiveClick(TObject *Sender);
+        void __fastcall ButtonStopReceiveClick(TObject *Sender);
+        void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+        void __fastcall ButtonClearClick(TObject *Sender);
+        void __fastcall Button1Click(TObject *Sender);
+        void __fastcall Timer1Timer(TObject *Sender);
+        void __fastcall Timer2Timer(TObject *Sender);
+        void __fastcall ButtonSendClick(TObject *Sender);
+        void __fastcall Button3Click(TObject *Sender);
+private:	// Anwender-Deklarationen
+        MyServer*                     mp_derServer;
+
+        #ifdef __USE_LOG_WINDOW__
+        BufferedThreadsaveLogDevice*  mp_logDevice;
+        #else
+        FileLogDevice*                mp_logDevice;
+        #endif
+public:		// Anwender-Deklarationen
+        __fastcall TForm1(TComponent* Owner);
+        void __fastcall MyWndProc(Messages::TMessage &Message);
+};
+//---------------------------------------------------------------------------
+#endif

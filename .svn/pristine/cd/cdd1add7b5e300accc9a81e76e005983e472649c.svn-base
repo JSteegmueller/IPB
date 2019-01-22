@@ -1,0 +1,34 @@
+#include "TCPCOM_Arduino.h"
+#include <Arduino.h>
+
+TCPCOM_Arduino::TCPCOM_Arduino()
+{
+   byteIndex = 0;
+}
+
+bool TCPCOM_Arduino::checkPacketAvailable()  // Liest Daten und liefert true, wenn Packetda. Beim n�chsten Aufruf wird Packet ueberschrieben
+{
+if (Serial.available())
+{
+    if (byteIndex == 0)
+    {
+      if (KENNBYTE == Serial.read())
+//      if ('X' == Serial.read())
+      {   
+         byteIndex++;
+      }
+    }
+    else
+    {
+      packet[byteIndex-1] = Serial.read();
+      byteIndex++;
+      if (byteIndex > PACKETGROESSE)
+      {
+        byteIndex = 0;
+         return true;
+      }
+    }
+  }
+  
+  return false;
+}

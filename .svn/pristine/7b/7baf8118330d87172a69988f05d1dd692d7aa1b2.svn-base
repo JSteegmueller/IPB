@@ -1,0 +1,75 @@
+#include "BlumenServer.h"
+
+#include "Dhcp.h"
+#include "Dns.h"
+#include "Ethernet.h"
+#include "EthernetClient.h"
+#include "EthernetServer.h"
+#include "EthernetUdp.h"
+#include "Ethernet.h"
+#include "SPI.h"
+#include "ByteBuffer.h"
+
+void BlumenServer::begin()
+{
+  alreadyConnected = false;
+
+  IPAddress ip(10, 16, 50, 46);
+  IPAddress myDns(10, 16, 1, 1);
+  IPAddress gateway(10, 16, 1, 42);
+  IPAddress subnet(255, 240, 0, 0);
+  byte mac[] = {
+    0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+  };
+
+
+  client = new EthernetClient();
+  server = new EthernetServer(123);
+
+
+  // initialize the ethernet device
+  Ethernet.begin(mac, ip, myDns, gateway, subnet);
+  // start listening for clients
+  server->begin();
+  Serial.print("Chat server address:");
+  Serial.println(Ethernet.localIP());
+}
+
+
+void BlumenServer::loop()
+{
+  // wait for a new client:
+  if (!alreadyConnected)
+  {
+    *client = server->available();
+    if (*client)
+    {
+      Serial.println("Neuer client");
+      alreadyConnected = true;
+    }
+  }
+
+  if (*client)
+  {
+    if (alreadyConnected)
+    {
+      if (client->available() > 0)
+      {
+        char thisChar = client->read();
+        Serial.write(thisChar);
+      }
+    }
+  }
+}
+
+void BlumenServer::sendData(ByteBuffer* derByteBuffer)
+{
+  if (*client)
+  {
+    client->write(derByteBuffer->getBuffer(), derByteBuffer->getValidBytes());
+    client->flush();
+    Serial.println("Senden");
+    Serial.println((const char*)derByteBuffer->getBuffer());
+    
+  }
+}

@@ -1,0 +1,37 @@
+#include "LCD_AbstractTransmiter.h"
+#include <Arduino.h>
+
+void LCD_AbstractTransmiter::sendByteAndWait(unsigned char value, unsigned char instructionOrData, unsigned int microseconds)
+{
+  setValueRSPin(instructionOrData);
+  setValueRWPin(LOW);
+
+  if (use4Bit)
+  {
+    sendBits(value >> 4); //MSB first,  2 x 4Bit
+  }
+  sendBits(value);
+
+  delayMicroseconds(microseconds);
+}
+
+void LCD_AbstractTransmiter::sendPulse(void)
+{
+  setValueEnableDataPin(LCD_E_PULSE_RUNNING);
+  delayMicroseconds(1);    // enable data pulse must be >450ns
+  setValueEnableDataPin(LCD_E_PULSE_READY);
+  delayMicroseconds(100);   // commands need > 37us to settle
+}
+
+void LCD_AbstractTransmiter::sendBitsAndWait(unsigned char value, unsigned int microseconds)
+{
+  setDataPins(value);
+  sendPulse();
+  delayMicroseconds(microseconds);
+}
+
+bool LCD_AbstractTransmiter::uses4Bit()
+{
+  return use4Bit;
+}
+

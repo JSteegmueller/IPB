@@ -1,0 +1,11 @@
+#ifndef _ITGEventHandler_h_
+#define _ITGEventHandler_h_
+
+class ITGEventHandler
+{
+   // Nicht benutzte Parameter sind 0
+   // calleraddress und classname DÜRFEN NICHT NULL SEIN!
+   public: virtual void onEvent(int event, void* calleraddress, char* classname, void* p4=0, void* p5=0) = 0;
+};
+
+#endif

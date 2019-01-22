@@ -1,0 +1,19 @@
+#include "App_Minimal.h"
+App_Minimal dieApp;
+
+void setup()
+{
+ Serial.begin(115200);
+ dieApp.setup();
+ Serial.println("Hallo Aetzanlage");
+}
+
+void loop()
+{
+  dieApp.loop();
+/*  if (dieApp.numberSerialDataToSend > 0)
+  {
+     Serial.write(dieApp.serialData);
+     dieApp.numberSerialDataToSend--;  
+  }*/
+}

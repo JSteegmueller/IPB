@@ -1,0 +1,75 @@
+#define SENSOR_1 A1
+#define SENSOR_4 A4
+#define SENSOR_5 A5
+#define SENSOR_3 A3
+
+int val1;
+int val4;
+int val5;
+int fahren = 9;
+int richtung = 5;
+int links = 6;
+int rechts = 4;
+bool weiche = true;
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(SENSOR_1, INPUT);
+  pinMode(SENSOR_5, INPUT);
+  pinMode(fahren, OUTPUT);
+  pinMode(richtung, OUTPUT);
+  pinMode(links, OUTPUT);
+  pinMode(rechts, OUTPUT);
+  analogWrite(fahren, 180); //umgekehrte LOGIK 255 == 0 170 =  gut
+  // analogWrite(richtung, 255);
+
+}
+
+void loop()
+{
+  
+  val1 = analogRead(SENSOR_1);
+  val4 = analogRead(SENSOR_4);
+  val5 = analogRead(SENSOR_5);
+
+  if ( val5 > 260)
+  {
+    digitalWrite(richtung, 1);
+    Serial.println("Wechsel--> von 5");
+    delay(2000);
+  }
+
+  if ( val4 > 130)
+  {
+    digitalWrite(richtung, 1);
+    Serial.println("Wechsel--> von 4");
+    delay(2000);
+  }
+
+
+  if ( val1 > 140)
+  {
+    digitalWrite(richtung, 0);
+    Serial.println("Wechsel<-- von 1");
+    delay(2000);
+    
+    if ( weiche == true)
+    {
+       digitalWrite(links, 1);
+       delay(300);   
+       digitalWrite(links, 0);
+       weiche = false;
+       Serial.println("links");  
+    }
+    
+    else if ( weiche == false)
+    {
+       digitalWrite(rechts, 1);
+       delay(300);   
+       digitalWrite(rechts, 0);
+       weiche = true;
+       Serial.println("rechts");
+    }
+  }
+}

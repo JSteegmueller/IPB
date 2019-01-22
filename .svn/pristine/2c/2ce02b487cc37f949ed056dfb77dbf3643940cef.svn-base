@@ -1,0 +1,19 @@
+#ifndef _BufferedThreadsaveLogDevice_h
+#define _BufferedThreadsaveLogDevice_h
+
+#include "LogDevice.h"
+#include "TGString.h"
+
+class BufferedThreadsaveLogDevice : public LogDevice
+{
+   private: bool mutexAccessBlocked;
+   private: TGString derText;
+
+   public:  BufferedThreadsaveLogDevice();
+   public:  void out(TGString toLog);
+   public:  TGString getText();
+};
+
+
+#endif
+ 

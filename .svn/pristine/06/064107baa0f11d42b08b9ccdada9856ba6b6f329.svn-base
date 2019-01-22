@@ -1,0 +1,288 @@
+#include "WindowsSocketAPI.h"
+
+#include <winsock2.h>
+
+std::string WindowsSocketAPI::startup()
+{
+   std::string errorText = "";
+   WSADATA wsa;
+   int errorID = ::WSAStartup(
+      MAKEWORD(2, 0),  //[in]  The highest version of Windows Sockets support that the caller can use. The high order byte specifies the minor version (revision) number; the low-order byte specifies the major version number.
+      &wsa );          //[out] Details of the Windows Sockets implementation.
+
+   // zu Debug-Zwecken
+   wsa.wVersion;       //The version of the Windows Sockets specification that the Windows Sockets DLL expects the caller to use.
+   wsa.wHighVersion;   //The highest version of the Windows Sockets specification that this DLL can support.
+   wsa.szDescription;  //Description of the Windows Sockets implementation.
+   wsa.szSystemStatus; //Status or configuration information.
+   wsa.iMaxSockets;    //Deprecated
+   wsa.iMaxUdpDg;      //Deprecated
+   wsa.lpVendorInfo;   //Deprecated
+
+   if (errorID == 0)
+   {
+      errorText = "";
+   }
+   else if(errorID == WSASYSNOTREADY)
+   {
+      errorText = ("WSASYSNOTREADY: The underlying network subsystem is not ready for network communication.");
+   }
+   else if(errorID == WSAVERNOTSUPPORTED)
+   {
+      errorText = ("WSAVERNOTSUPPORTED: The version of Windows Sockets support requested is not provided by this particular Windows Sockets implementation.");
+   }
+   else if(errorID == WSAEINPROGRESS)
+   {
+      errorText = ("WSAEINPROGRESS: A blocking Windows Sockets 1.1 operation is in progress.");
+   }
+   else if(errorID == WSAEPROCLIM)
+   {
+      errorText = ("WSAEPROCLIM: A limit on the number of tasks supported by the Windows Sockets implementation has been reached.");
+   }
+   else if(errorID == WSAEFAULT)
+   {
+      errorText = ("WSAEFAULT: The lpWSAData parameter is not a valid pointer.");
+   }
+   else
+   {
+      errorText = ("Unknown errorIDor");
+   }
+
+   if (errorText != "")
+   {
+      errorText = std::string() + "WindowsSocketApi::startup(): " + errorText;
+
+      #ifndef DO_NOT_THROW_EXCEPTIONS
+         throw (new std::string(errorText))->c_str();
+      #endif
+   }
+
+   return errorText;
+}
+
+void WindowsSocketAPI::cleanup()
+{
+   // Hier könnte man mitzaehlen!
+
+   WSACleanup();
+}
+
+std::string WindowsSocketAPI::getMyHostname()
+{
+   char szHostName[128];
+   char FAR* hostName = szHostName;
+   hostName[0] = 0;
+   int socketError = ::gethostname(hostName, 127);
+   if (socketError)
+   {
+      std::string errorText = "";
+      int errorID = WSAGetLastError();
+
+      if (errorID == 0)
+      {
+         errorText = "unknown Error";
+      }
+      else if(errorID == WSASYSNOTREADY)
+      {
+         errorText = ("SystemAPI:WSAStartup(): WSASYSNOTREADY: The underlying network subsystem is not ready for network communication.");
+      }
+      else if(errorID == WSAVERNOTSUPPORTED)
+      {
+         errorText = ("SystemAPI:WSAStartup(): WSAStartup():WSAVERNOTSUPPORTED: The version of Windows Sockets support requested is not provided by this particular Windows Sockets implementation.");
+      }
+      else if(errorID == WSAEINPROGRESS)
+      {
+         errorText = ("SystemAPI:WSAStartup(): WSAEINPROGRESS: A blocking Windows Sockets 1.1 operation is in progress.");
+      }
+      else if(errorID == WSAEPROCLIM)
+      {
+         errorText = ("SystemAPI:WSAStartup(): WSAEPROCLIM: A limit on the number of tasks supported by the Windows Sockets implementation has been reached.");
+      }
+      else if(errorID == WSAEFAULT)
+      {
+          errorText = ("SystemAPI:WSAStartup(): WSAEFAULT: The lpWSAData parameter is not a valid pointer.");
+      }
+      else
+      {
+         char intString[1000];
+         itoa(errorID, intString, 10); // Basis 10
+         errorText = (std::string() + "SystemAPI:WSAStartup(): Unknown errorIDor:" + intString);
+      }
+
+      errorText = std::string() + "SystemAPI:WSAStartup(): " + errorText;
+
+      #ifndef DO_NOT_THROW_EXCEPTIONS
+         throw (new std::string(errorText))->c_str();
+      #endif
+   }
+
+   return std::string(hostName);
+}
+
+void WindowsSocketAPI::setTrueFalseSocketOpt(int socketHandler, int level, int option, bool enable)
+{
+   setsockopt( socketHandler,
+               level,
+               option,
+               (char*) &enable,
+               sizeof(enable)   );
+/*
+http://msdn.microsoft.com/en-us/library/ms740476%28VS.85%29.aspx
+int setsockopt(              // returns Errorcode
+  __in  SOCKET      s,       // A descriptor that identifies a socket
+  __in  int         level,   // The level at which the option is defined (for example, SOL_SOCKET)
+  __in  int         optname, // The socket option for which the value is to be set (for example, SO_BROADCAST)
+  __in  const char* optval,  // A pointer to the buffer in which the value for the requested option is specified
+  __in  int         optlen   // The size, in bytes, of the buffer pointed to by the optval parameter
+);
+*/
+}
+
+std::string WindowsSocketAPI::getAllMyIPAddressesSemicolonSeparated()
+{
+   WindowsSocketAPI::startup();
+   
+   std::string dieIPAdresse;
+   std::string errorText;
+
+   struct hostent* hostAdressDaten = gethostbyname(0); // 0 = My own Hostname; Otehwise any RESOLVABLE Hostname (Host-File, DNS, ...)
+   char* fullyQualifiedDomainName = hostAdressDaten->h_name;
+   char* daten_0 = hostAdressDaten->h_addr_list[0]; // Die Anzahl erkennt man am letzten Element: Es ist NULL
+   char* daten_1 = hostAdressDaten->h_addr_list[1];
+   char* daten_2 = hostAdressDaten->h_addr_list[2];  // u.s.w.
+   short typ = hostAdressDaten->h_addrtype; // Ist 2 für IPv4 / INET
+   char* alias_0 = hostAdressDaten->h_aliases[0]; // Die Anzahl erkennt man am letzten Element: Es ist NULL
+   char* alias_1 = hostAdressDaten->h_aliases[1];
+   char* alias_2 = hostAdressDaten->h_aliases[2]; // u.s.w.
+   short laengeEinerAdresse = hostAdressDaten->h_length; // 4 Byte
+
+   if(hostAdressDaten == NULL)
+   {
+      #ifndef DO_NOT_THROW_EXCEPTIONS
+         throw (new std::string("WindowsSocketAPI::getAllMyIPAddressesSemicolonSeparated(): Unknown hostname"))->c_str();
+      #endif
+   }
+
+   if (hostAdressDaten->h_length != 4) // Falsches Format!
+   {
+      #ifndef DO_NOT_THROW_EXCEPTIONS
+         throw (new std::string("WindowsSocketAPI::getAllMyIPAddressesSemicolonSeparated(): Unhandles address format"))->c_str();
+      #endif
+   }
+
+
+   std::string alleIPAdressen;
+   unsigned char* actualFourUCharsAddress;
+   char actualIPAddress[16]; // maximum Stringlengt of IP-Address. example:  "192.168.255.255"
+                             //                                               123456789012345\0 ... 16 Bytes
+   for(int x = 0; hostAdressDaten->h_addr_list[x] != NULL; x++) // (Nur)Die ERSTE ungültige ist NULL!
+   {
+      char* unklarObVerwertbar_NAME = (hostAdressDaten->h_addr_list[x])+4;
+      actualFourUCharsAddress = hostAdressDaten->h_addr_list[x];
+
+      wsprintf(actualIPAddress, "%d.%d.%d.%d", actualFourUCharsAddress[0],
+                                               actualFourUCharsAddress[1],
+                                               actualFourUCharsAddress[2],
+                                               actualFourUCharsAddress[3]);
+
+      if (x == 0)
+      {
+         alleIPAdressen = actualIPAddress;
+      }
+      else
+      {
+         alleIPAdressen = alleIPAdressen + "; " + actualIPAddress;
+      }
+   }
+
+   return alleIPAdressen;
+}
+
+std::string WindowsSocketAPI::connect(SOCKET derSocket, SOCKADDR* dieAddresse)
+{
+   std::string errorText = "";
+   int err = ::connect(derSocket, dieAddresse, sizeof(SOCKADDR));
+   if (err < 0)
+   {
+      int errorID = WSAGetLastError();
+
+      if (errorID==WSANOTINITIALISED)
+      {
+         errorText = "WSA NOT INITIALISED";
+      }
+      else if (errorID==WSAENETDOWN)
+      {
+         errorText = " NET DOWN";
+      }
+      else if (errorID==WSAEADDRINUSE)
+      {
+         errorText = "ADDR IN USE";
+      }
+      else if (errorID==WSAEINTR)
+      {
+         errorText = "The (blocking) call was canceled through WSACancelBlockingCall";
+      }
+      else if (errorID==WSAEINPROGRESS)
+      {
+         errorText = "A blocking Windows Sockets 1.1 call is in progress";
+      }
+      else if (errorID==WSAEALREADY)
+      {
+         errorText = "A nonblocking connect call is in progress";
+      }
+      else if (errorID==WSAEADDRNOTAVAIL)
+      {
+         errorText = "The specified address is not available from the local machine";
+      }
+      else if (errorID==WSAEAFNOSUPPORT)
+      {
+         errorText = "Addresses in the specified family cannot be used with this socket";
+      }
+      else if (errorID==WSAECONNREFUSED)
+      {
+         errorText = "The attempt to connect was rejected";
+      }
+      else if (errorID==WSAEFAULT)
+      {
+         errorText = "The name or the namelen argument is not valid";
+      }
+      else if (errorID==WSAEINVAL)
+      {
+         errorText = "The parameter s is a listening socket, or the destination address is not valid";
+      }
+      else if (errorID==WSAEISCONN)
+      {
+         errorText = "The socket is already connected";
+      }
+      else if (errorID==WSAENETUNREACH)
+      {
+         errorText = "The network cannot be reached";
+      }
+      else if (errorID==WSAENOBUFS)
+      {
+         errorText = "No buffer space is available";
+      }
+      else if (errorID==WSAENOTSOCK)
+      {
+         errorText = "The descriptor is not a socket";
+      }
+      else if (errorID==WSAETIMEDOUT)
+      {
+         errorText = "Attempt to connect timed out";
+      }
+      else if (errorID==WSAEWOULDBLOCK)
+      {
+         errorText = "The socket is marked as nonblocking and the connection cannot be completed";
+      }
+      else if (errorID==WSAEACCES)
+      {
+         errorText = "Attempt to connect datagram socket to broadcast address failed because setsockopt SO_BROADCAST is not enabled";
+      }
+      else
+      {
+         errorText = "Unknown error";
+      }
+   }
+
+   return errorText;
+}

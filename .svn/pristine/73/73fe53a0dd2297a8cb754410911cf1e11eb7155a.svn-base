@@ -1,0 +1,23 @@
+#ifndef _TCP_CLIENT_H_
+#define _TCP_CLIENT_H_
+
+#include "Thread.h"
+#include "TCP_Socket_ClassDeclarations.h"
+
+class TCP_Client: public Thread
+{
+   private:
+   ClientSocket* clientSocket;
+
+   public:
+   TCP_Client();
+   ~TCP_Client();
+   void initAndConnectToServer(const char* serverAddress, int serverPort);
+   void disconnectFromServer();
+   void sendData(void* data, int anzahlBytes);
+   void newRun(void* runParameter);   // this method starts with the new forked thread
+
+   virtual void dataReceived(void* connectionSocket, char* data, int laenge){};
+};
+
+#endif

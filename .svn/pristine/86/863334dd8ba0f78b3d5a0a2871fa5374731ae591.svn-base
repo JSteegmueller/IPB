@@ -1,0 +1,68 @@
+#ifndef _Thread_H_
+#define _Thread_H_
+
+/*
+ Diese Klasse verwaltet (genau) einen Thread.
+ 
+ Wenn im Thread Speicher mit "new" allokiert wird, dann stirbt dieser Speicher
+ nicht mit dem Thread und ist von allen anderen Threads benutzbar.
+ Der Zugriff auf jeden anderen Speicher (Parameter, Klassenattribute, globale 
+ Variablen) aus anderen Threads heraus ist auch dann kritisch, wenn 
+ der allokierende Thread noch aktiv ist.
+ */ 
+
+#define MAX_THREAD_ERROR_STRLEN 100
+
+class ITGEventHandler;
+#define ITGEH_EVENT_THREAD_FORKED 1
+class Thread
+{
+private:
+   void*       threadForkedHandle;
+
+   bool        threadIsSuspended;     // Kann vom System nicht erfragt werden.
+   bool        threadIsForked;        // Nur ein Fork pro Objekt zulässig !
+   void*       threadRunParameter;    // Wird von "forkNewRun" gesetzt und im neuen Thread von "threadForkMethod" ausgelesen.
+   static void threadForkMethod(void* param);
+   void operator=(Thread& x){throw "Kopieren des Objektes ist nicht erlaubt";};
+
+   ITGEventHandler* derITGEventHandlerNewRun;  // Wenn gesetzt, dann wird dieser, anstatt von this->newRun(..) aufgerufen
+   char lastError[MAX_THREAD_ERROR_STRLEN];
+
+public:
+   Thread();
+   ~Thread();
+
+   // Wenn innerhalb des Threads eine Exception passiert ist:
+   char* getLastError(){return lastError;};
+
+   static void  sleepMilliSec(int ms); // Der aufrufende Thread geht schlafen
+
+   // Scheduler-Methoden, gemeint ist immer der geforkte Thread!
+   void         suspend();
+   void         resume();
+   void         exit(); // Wirft keine Exceptions
+
+   // Scheduler-Methoden, toForkedThread = true -> der geforkte Thread, ansonsten der aufrufende Thread
+   // Setzt die "Base Priority" (= effektive Priorität für den Scheduler)
+   // niedrig(1) .. echtzeit(31)  Nicht alle Werte sind möglich, nächsthöhere wird verwendet.
+   int          setPriority_1_31(int priority, bool toForkedThread = true); // liefert -1 wenns nicht klappt
+   int          getPriority_1_31(bool ofForkedThread = true);               // liefert -1 wenns nicht klappt, sonst 1 .. 31
+
+   // Methoden für den Hauptthread, aus dem der neue Thread geforkt wurde
+   // Werfen keine Exceptions
+   bool         waitFinished(int waitTimeoutMilliSec); // Waits until the forked thread is finished
+   bool         chekExists();
+   bool         chekSuspended();          // Checks if forked thread is suspended
+   void         exitAndFreeStructure();   // Exit the forked thread
+
+   // Hauptthread forkt mit "threadForkNewRun" --> neuer Thread läuft "threadNewRun"
+   void         forkNewRun(void* runParameter, bool createSuspended = false, bool allowRefork = true); // Returns new thread handle and forks this thread
+                                                                                                       // If allowRefork==false throws an exception if thread was running bevor fork.
+   // Hier startet der neue Thread:
+   virtual void newRun(void* runParameter){};   // This method starts with the new forked thread
+   void setITGEventHandlerNewRun(ITGEventHandler* einITGEventHandlerNewRun){derITGEventHandlerNewRun = einITGEventHandlerNewRun;}; // Wenn gesetzt, dann wird dieser, anstatt von this->newRun(..) aufgerufen
+};
+
+#endif
+

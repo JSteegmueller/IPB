@@ -1,0 +1,24 @@
+#ifndef _TCP_SERVER_H_
+#define _TCP_SERVER_H_
+
+#include "Thread.h"
+#include "TCP_Socket_ClassDeclarations.h"
+
+class TCP_Server : public Thread
+{
+private:
+   int  serverSocketHandler;
+   int  listenPort;
+
+   void newRun(void* runParameter);   // this method starts with the new forked thread
+public:
+   TCP_Server();
+   ~TCP_Server();
+   ConnectionSocketPool* connectionSocketPool;
+   void StartReceive(int listenPort);
+   void StopReceive();
+   void sendData(void* connectionSocket, void* data, int anzahlBytes);
+   virtual void dataReceived(void* connectionSocket, char* data, int laenge, char* clientAdresse, int clientPort)=0;
+};
+
+#endif

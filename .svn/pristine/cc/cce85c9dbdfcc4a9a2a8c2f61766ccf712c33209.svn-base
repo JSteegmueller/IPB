@@ -1,0 +1,111 @@
+object Form1: TForm1
+  Left = 251
+  Top = 230
+  Width = 433
+  Height = 379
+  Caption = 'Server'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  OnClose = FormClose
+  PixelsPerInch = 96
+  TextHeight = 13
+  object ButtonStartReceive: TButton
+    Left = 8
+    Top = 8
+    Width = 153
+    Height = 25
+    Caption = 'ButtonStartReceive         Port:'
+    TabOrder = 0
+    OnClick = ButtonStartReceiveClick
+  end
+  object ButtonStopReceive: TButton
+    Left = 8
+    Top = 40
+    Width = 201
+    Height = 25
+    Caption = 'ButtonStopReceive'
+    TabOrder = 1
+    OnClick = ButtonStopReceiveClick
+  end
+  object RichEdit1: TRichEdit
+    Left = 8
+    Top = 80
+    Width = 201
+    Height = 209
+    Lines.Strings = (
+      '')
+    ScrollBars = ssVertical
+    TabOrder = 2
+    WordWrap = False
+  end
+  object ButtonClear: TButton
+    Left = 8
+    Top = 296
+    Width = 201
+    Height = 17
+    Caption = 'clear Display'
+    TabOrder = 3
+    OnClick = ButtonClearClick
+  end
+  object Button1: TButton
+    Left = 8
+    Top = 328
+    Width = 201
+    Height = 17
+    Caption = 'show Log'
+    TabOrder = 4
+    OnClick = Button1Click
+  end
+  object ButtonSend: TButton
+    Left = 216
+    Top = 8
+    Width = 201
+    Height = 25
+    Caption = 'Reply to last received connection'
+    TabOrder = 5
+    OnClick = ButtonSendClick
+  end
+  object Button3: TButton
+    Left = 320
+    Top = 320
+    Width = 97
+    Height = 25
+    Caption = 'Exception-Test'
+    TabOrder = 6
+    OnClick = Button3Click
+  end
+  object EditPort: TEdit
+    Left = 168
+    Top = 8
+    Width = 41
+    Height = 21
+    TabOrder = 7
+    Text = '123'
+  end
+  object RichEditAntwort: TRichEdit
+    Left = 216
+    Top = 40
+    Width = 201
+    Height = 161
+    Lines.Strings = (
+      'Eine Antwort')
+    TabOrder = 8
+  end
+  object Timer1: TTimer
+    Interval = 200
+    OnTimer = Timer1Timer
+    Left = 216
+    Top = 320
+  end
+  object Timer2: TTimer
+    Interval = 300
+    OnTimer = Timer2Timer
+    Left = 184
+    Top = 264
+  end
+end

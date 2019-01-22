@@ -1,0 +1,20 @@
+#ifndef _MyServer_h_
+#define _MyServer_h_
+
+#include "TCP_Server.h"
+#include "TGString.h"
+
+// Implementierung der abstrakten Klasse
+class MyServer : public TCP_Server
+{
+   public:          // !! ACHTUNG !!
+   TGString buffer; // Keine direkten Zugriffe auf Grafik aus Threads heraus erlaubt !
+   void* connectionSocket;
+   MyServer();
+
+   // Imolementiert abstrakte Methode
+   void dataReceived(void* connectionSocket, char* data, int laenge, char* clientAdresse, int clientPort);
+};
+
+#endif
+

@@ -1,0 +1,9 @@
+Probleme:
+1) Löschzeitpunkt Statischer Variablen macht beim Monitoren Probleme. Noch keine "saubere" Lösung
+   Workaround: Obersten Destruktor (~TForm1) meiden.
+
+ToDo:                                               
+1) Monitoring optimieren
+2) char* CSocket::getIP() ... sauber nach WinAPI.h bringen
+
+

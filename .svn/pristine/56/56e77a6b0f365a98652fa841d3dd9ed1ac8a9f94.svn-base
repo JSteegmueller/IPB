@@ -1,0 +1,164 @@
+#include <vcl.h>
+
+#include "Unit1.h"
+
+#ifdef __USE_LOG_WINDOW__
+   #include "Monitoring\MonitorWindow.h"
+#endif
+
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+
+//#define __LOG_TForm1__
+
+// Loginitialisierung muss immer gesetzt werden, da andere Module loggen könnten!
+#include "Monitoring\Log.h"
+
+#ifdef __USE_LOG_WINDOW__
+   #include "Monitoring\BufferedThreadsaveLogDevice.h"
+#else
+   #include "Monitoring\FileLogDevice.h"
+#endif
+
+#include "MyServer.h"
+
+TForm1 *Form1;
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+        : TForm(Owner)
+{
+   // Das LogDevice muss immer gesetzt werden, da andere Module loggen könnten!
+   #ifdef __USE_LOG_WINDOW__
+   mp_logDevice = new BufferedThreadsaveLogDevice();
+   #else
+   mp_logDevice = new FileLogDevice("server.log");
+   #endif
+   Log::setLogDevice(mp_logDevice, true);
+
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "E TForm1" + "(" + (int)this + ") : TForm1" + "()");
+   #endif
+
+   this->Left = 0;
+   this->Top  = 0;
+
+   WindowProc = MyWndProc;
+
+   mp_derServer = new MyServer();
+
+   this->RichEdit1->Text = "";
+
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "X TForm1" + "(" + (int)this + ") : TForm1" + "()");
+   #endif
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ButtonStartReceiveClick(TObject *Sender)
+{
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "E TForm1" +"(" + (int)this +   ") : ButtonStartReceiveClick( TObject *Sender = " + (int)Sender + " )");
+   #endif
+
+   mp_derServer->StartReceive(EditPort->Text.ToInt());
+   Caption = "";
+   Caption = Caption + "Der Port = " + EditPort->Text.ToInt();
+
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "X TForm1" +"(" + (int)this +   ") : ButtonStartReceiveClick()");
+   #endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ButtonStopReceiveClick(TObject *Sender)
+{
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "E TForm1" +"(" + (int)this +   ") : ButtonStopReceiveClick( TObject *Sender = " + (int)Sender + " )");
+   #endif
+
+   mp_derServer->StopReceive();
+   this->RichEdit1->Text = "";
+   Caption = "- nicht empfangsbereit -";
+
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "X TForm1" +"(" + (int)this +   ") : ButtonStopReceiveClick()");
+   #endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
+{
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "E TForm1" + "(" + (int)this + ") : FormClose" + "()");
+   #endif
+
+   delete mp_derServer;
+
+   #ifdef __LOG_TForm1__
+   Log::out(S_ + "X TForm1" + "(" + (int)this + ") : FormClose" + "()");
+   #endif
+
+
+//   delete (mp_logDevice);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ButtonClearClick(TObject *Sender)
+{
+   RichEdit1->Text = "";
+}
+//---------------------------------------------------------------------------
+// Exception Handling für alle GUI-Events
+void __fastcall TForm1::MyWndProc(Messages::TMessage &Message)
+{
+   try
+   {
+      WndProc(Message);
+   }
+   catch(char* e)
+   {
+      Application->MessageBoxA(e, "Exception in TForm1::MyWndProc", 0);
+   }
+}
+
+void __fastcall TForm1::Button1Click(TObject *Sender)
+{
+   #ifdef __USE_LOG_WINDOW__
+   MonitorWindow->Visible = true;
+   #endif
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Timer1Timer(TObject *Sender)
+{
+   #ifdef __USE_LOG_WINDOW__
+   if (MonitorWindow->Visible == true)
+   {
+      MonitorWindow->addText( mp_logDevice->getText().c_str() );
+   }
+   #endif
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::Timer2Timer(TObject *Sender)
+{
+   if (mp_derServer->buffer.length() > 0)
+   {
+      RichEdit1->Lines->Add(mp_derServer->buffer.c_str());
+      mp_derServer->buffer = "";
+   }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ButtonSendClick(TObject *Sender)
+{
+   mp_derServer->sendData(mp_derServer->connectionSocket, RichEditAntwort->Text.c_str(), RichEditAntwort->Text.Length()+1);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button3Click(TObject *Sender)
+{
+   throw "baeeeeh";
+}
+//---------------------------------------------------------------------------
+

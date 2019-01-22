@@ -1,0 +1,58 @@
+#ifndef _App_Minimal_h_
+#define _App_Minimal_h_
+#include "App_Base.h"
+
+class App_Minimal : public App_Base
+{
+    unsigned int temperatur_Messwert_LHO;
+    unsigned int temperatur_Messwert_RHU;
+    unsigned int temperatur_Messwert_RVU;
+    double temperatur_LHO;
+    double temperatur_RHU;
+    double temperatur_RVU;
+    double maxTemperatur;
+    double minTemperatur;
+    double temperatur;
+    double schaltTemperaturHeizung;
+
+    bool istOben;
+    bool istUnten;
+    bool faehrtAuf;
+    bool faehrtAb;
+    bool moechteHeizen;
+    bool fehlerErkannt;
+
+    void blubberEin();
+    void blubberAus();
+    void heizenEin();
+    void heizenAus();
+    void temperaturLesen();
+    void fahrenAuf();
+    void fahrenStop();
+    void fahrenAb();
+    void datenUebertragen();
+    void pumpeEin();
+    void pumpeEinRevers();
+    void pumpeAus();
+    void reset();
+
+    size_t Serial_print(const String &s);
+    size_t Serial_write(const uint8_t *buffer, size_t size);
+    size_t Serial_printNumber(unsigned long n, uint8_t base = 10) ;
+    size_t Serial_write(const char* buffer);
+    size_t Serial_println();
+    void eventCommand(unsigned char command);
+
+
+  public:
+    App_Minimal();
+    void appLoop();
+    void appSetup();
+    void appEvent(int idEvent);
+};
+
+#endif
+
+
+
+

@@ -1,0 +1,105 @@
+http://www.zotteljedi.de/socket-tipps/code_w32connect.html
+
+
+
+   /* Den Verbindungsaufbau anstossen */
+   if (connect(sock, (struct sockaddr*) &addr, sizeof(addr)) == SOCKET_ERROR)
+   {
+      /* Das schlägt normalerweise fehl, wobei der Fehler WSAEWOULDBLOCK
+       * darauf hinweist, daß der Verbindungsaufbau durchaus noch Erfolgreich
+       * sein kann, und der Aufruf nur fehlgeschlagen ist, weil er andernfalls
+       * blockieren würde, was ja absichtlich deaktiviert wurde.
+       */
+      if (WSAGetLastError() != WSAEWOULDBLOCK)
+      {
+         printf("*** connect took %u seconds ***\n", time(NULL) - t_start);
+         fprintf(stderr, "Can't connect to %s:%u: %lu\n",
+            inet_ntoa(addr.sin_addr), ntohs(addr.sin_port), WSAGetLastError());
+         return EXIT_FAILURE;
+      }
+   }
+
+   /* Deskriptor-Set zurücksetzen und mit dem zu verbindenden Socket belegen */
+   FD_ZERO(&fds);
+   assert(sock < FD_SETSIZE);
+   FD_SET(sock, &fds);
+
+   /* Den gewählte timeout-Wert einsetzen */
+   timeout.tv_sec = CONNECT_TIMEOUT;
+   timeout.tv_usec = 0;
+
+   /* Nun select aufrufen; dieses kehrt entweder nach Ablauf des Timeouts
+    * zurück, oder wenn der Socket zum Schreiben bereit ist, was genau dann
+    * passiert, wenn er erfolgreich verbunden wurde.
+    */
+   ret = select(sock + 1, NULL, &fds, NULL, &timeout);
+   if (ret == SOCKET_ERROR)
+   {
+      fprintf(stderr, "Call to select failed: %lu\n", WSAGetLastError());
+      return EXIT_FAILURE;
+   }
+
+   /* Falls select zurückgekehrt ist, aber der zu verbindende Socket nicht
+    * im Deskriptor-Set vorhanden ist, war das Verbinden in der gegebenen
+    * Zeit nicht erfolgreich.
+    */
+   if (FD_ISSET(sock, &fds) == 0)
+   {
+      printf("*** connect took %u seconds ***\n", time(NULL) - t_start);
+      fprintf(stderr, "Can't connect to %s:%u, timed out\n",
+         inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
+      return EXIT_FAILURE;
+   }
+
+   /* Der Socket kann nun wieder blockierend gemacht werden */
+   opt = 0;
+   ioctlsocket(sock, FIONBIO, &opt);
+#else
+   /* Die Lösung ohne select ruft connect ganz normal auf */
+   if (connect(sock, (struct sockaddr*) &addr, sizeof(addr)) == SOCKET_ERROR)
+   {
+      printf("*** connect took %u seconds ***\n", time(NULL) - t_start);
+      fprintf(stderr, "Can't connect to %s:%u: %lu\n",
+         inet_ntoa(addr.sin_addr), ntohs(addr.sin_port), WSAGetLastError());
+      return EXIT_FAILURE;
+   }
+#endif
+
+   printf("connected to %s:%u!\n",
+      inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
+
+   /* Als Test wird ein kleines HTTP-Request abgesetzt, und dessen Antwort
+    * auf die Konsole ausgegeben.
+    */
+   sprintf(request, "HEAD / HTTP/1.1\r\n"
+                    "Host: %s\r\n"
+                    "Connection: Close\r\n"
+                    "\r\n", hostname);
+
+   ret = send(sock, request, strlen(request), 0);
+   if (ret == SOCKET_ERROR)
+   {
+      fprintf(stderr, "Sending request failed: %lu\n", WSAGetLastError());
+      return EXIT_FAILURE;
+   }
+   printf("request sent... (%i octets)\n");
+
+   ret = recv(sock, response, sizeof(response), 0);
+   if (ret == SOCKET_ERROR)
+   {
+      fprintf(stderr, "Receiving response failed: %lu\n", WSAGetLastError());
+      return EXIT_FAILURE;
+   }
+   printf("response read, %i octets:\n\n", ret);
+
+   puts("==================================================");
+   fwrite(response, 1, ret, stdout);
+   puts("==================================================");
+
+   closesocket(sock);
+
+   WSACleanup();
+
+   return EXIT_SUCCESS;
+}
+    

@@ -1,0 +1,103 @@
+#include "ConnectionSocketPool.h"
+#include "ConnectionSocketListe.h"
+#include "ConnectionSocket.h"
+#include "SystemAPI.h"
+
+#ifdef __Log_ConnectionSocketPool__
+#include "Log.h"
+#endif
+
+#ifdef __Log_ConnectionSocketPool__
+void ConnectionSocketPool::out(TGString EX, TGString s)
+{
+   Log::out(S_+EX+": ConnectionSocketPool::("+SystemAPI::threadGetCurrentID() +") " +s);
+}
+#endif
+
+ConnectionSocketPool::ConnectionSocketPool()
+{
+   connectionSocketListe = new ConnectionSocketListe();
+}
+
+ConnectionSocketPool::~ConnectionSocketPool()
+{
+   delete connectionSocketListe;
+}
+
+void ConnectionSocketPool::addSocket(ConnectionSocket* newConnectionSocket)
+{
+   #ifdef __Log_ConnectionSocketPool__
+   out("E", "addSocket(ConnectionSocket* newConnectionSocket)");
+   #endif
+
+
+   connectionSocketListe->push_back(newConnectionSocket);
+
+   #ifdef __Log_ConnectionSocketPool__
+   out("X", "addSocket(ConnectionSocket* newConnectionSocket)");
+   #endif
+
+};
+
+void ConnectionSocketPool::deleteConnectionSocket(ConnectionSocket* deleteObject)
+{
+   #ifdef __Log_ConnectionSocketPool__
+   out("E", "deleteConnectionSocket(ConnectionSocket* deleteObject)");
+   #endif
+
+   for (int i=0; i<connectionSocketListe->size(); i++)
+   {
+      if (connectionSocketListe->at(i) == deleteObject)
+      {
+         connectionSocketListe->at(i)->close();
+         connectionSocketListe->erase(i); // Liste deletet Element bzw. Socket-Zeiger!
+         break;
+      }
+   }
+
+   #ifdef __Log_ConnectionSocketPool__
+   out("X", "deleteConnectionSocket(ConnectionSocket* deleteObject)");
+   #endif
+
+}
+
+void ConnectionSocketPool::deleteAllSockets()
+{
+   #ifdef __Log_ConnectionSocketPool__
+   out("E", "deleteAllSockets()");
+   #endif
+
+   for (int i=0; i<connectionSocketListe->size(); i++)
+   {
+      connectionSocketListe->at(0)->close(); // N mal das erste löschen!
+   }
+
+   connectionSocketListe->clear(); // Liste deletet alle Elemente bzw. Socket-Zeiger!
+
+   #ifdef __Log_ConnectionSocketPool__
+   out("X", "deleteAllSockets()");
+   #endif
+
+}
+
+void ConnectionSocketPool::deleteAllClosedSockets()
+{
+   #ifdef __Log_ConnectionSocketPool__
+   out("E", "deleteAllClosedSockets()");
+   #endif
+
+   for (int i=0; i<connectionSocketListe->size(); i++)
+   {
+      ConnectionSocket* aktCS = connectionSocketListe->at(i);
+      if (!aktCS->isActive())
+      {
+         aktCS->close();                  // Sicher gehen, dass Thread gestoppt ist.
+         connectionSocketListe->erase(i); // aus Liste nehmen und deleten
+         i--;                             // Liste wurde kleiner!
+      }
+   }
+   #ifdef __Log_ConnectionSocketPool__
+   out("X", "deleteAllClosedSockets()");
+   #endif
+}
+

@@ -1,0 +1,18 @@
+#ifndef _CLASSDECLARATIONS_H_
+#define _CLASSDECLARATIONS_H_
+
+class BufferedThreadsaveLogDevice;
+class FileLogDevice;
+
+class ClientSocket;
+class ConnectionSocket;
+class ConnectionSocketListe;
+class ConnectionSocketPool;
+class MyServer;
+class TCP_Server;
+class TCP_Client;
+class Thread;
+
+#endif
+
+ 

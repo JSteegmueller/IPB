@@ -1,0 +1,13 @@
+#include "App_Minimal.h"
+App_Minimal dieApp;
+
+void setup()
+{
+ Serial.begin(115200);
+ dieApp.setup();
+}
+
+void loop()
+{
+  dieApp.loop();
+}

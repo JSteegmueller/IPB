@@ -1,0 +1,29 @@
+#ifndef _ConnectionSocketPool_h_
+#define _ConnectionSocketPool_h_
+
+#include "TCP_Socket_ClassDeclarations.h"
+
+//#define __Log_ConnectionSocketPool__
+
+#ifdef __Log_ConnectionSocketPool__
+#include "TGString.h"
+#endif
+
+class ConnectionSocketPool
+{
+   #ifdef __Log_ConnectionSocketPool__
+   void out(TGString EX, TGString s);
+   #endif
+
+   ConnectionSocketListe* connectionSocketListe;
+   void deleteConnectionSocket(ConnectionSocket* deleteObject);
+
+   public:
+   ConnectionSocketPool();
+   ~ConnectionSocketPool();
+   void deleteAllSockets();
+   void deleteAllClosedSockets();
+   void addSocket(ConnectionSocket* newConnectionSocket);
+};
+
+#endif

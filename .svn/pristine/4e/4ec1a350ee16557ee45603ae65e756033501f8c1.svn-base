@@ -1,0 +1,29 @@
+#ifndef _WindowsSocketAPI_h_
+#define _WindowsSocketAPI_h_
+
+//#define DO_NOT_THROW_EXCEPTIONS
+
+// Gutes Tutorial:
+// http://www.c-worker.ch/tuts/wstut_op.php
+
+#include <windows.h>
+#include <winsock2.h>
+#include <string> // std::string
+
+class WindowsSocketAPI
+{
+public:
+   static std::string startup(); // Liefert Fehlermeldung oder "".
+   static void cleanup(); // Muss am Ende so oft aufgerufen werden wie startup().
+
+   static std::string getMyHostname();
+      
+   static void        setTrueFalseSocketOpt(int socketHandler, int level, int option, bool enable);
+   static std::string getAllMyIPAddressesSemicolonSeparated();
+
+   static std::string connect(SOCKET derSocket, SOCKADDR* dieAddresse);
+   static SOCKET      getTCPIPSocket(){return ::socket(AF_INET, SOCK_STREAM, 0);};    
+};
+
+#endif
+ 

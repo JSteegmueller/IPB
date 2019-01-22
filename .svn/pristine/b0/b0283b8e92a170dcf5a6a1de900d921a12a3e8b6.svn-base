@@ -1,0 +1,76 @@
+#include "Log.h"
+#include "LogDevice.h"
+#include "SystemAPI.h"
+
+// Statische Klassenvariablen ins Leben rufen:
+int        Log::mLevel;     // Alle statischen Variablen existieren in den
+LogDevice* Log::myLogDevice = 0;    // Objekt-Destruktoren nicht mehr!
+bool       Log::useProcessID = false;
+
+void Log::out(TGString logText, void* currentObject)
+{
+   if (myLogDevice == 0)      // Existiert Logdevice?
+   {
+      return;
+   }
+
+   logText = logText + "\n";
+
+   if(logText.subString(0,2)=="E:")                 // enter
+   {
+      logText = buildlevel() + logText;
+      mLevel ++;   // DANACH (!!) wird erst eingerückt!
+   }
+   else if(logText.subString(0,2)=="X:")            // exit
+   {
+      mLevel --;
+      if (mLevel < 0) mLevel = 0;
+      logText = buildlevel() + logText;
+   }
+   else if(logText.subString(0,2)=="M:")            // mark
+   {
+      TGString s;
+      s  = ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+      s += buildlevel() + logText.subString(2);
+      s += ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+      logText = s;
+   }
+   else                                             // nur loggen
+   {
+      logText = buildlevel() + logText;
+   }
+
+   if (useProcessID)
+   {
+      logText = S_ + "[" + SystemAPI::threadGetCurrentID() + "]  " + logText;
+   }
+
+   if (currentObject != 0)
+   {
+      logText = S_ + "(" + (int)currentObject + ")  " + logText;
+   }
+
+   myLogDevice->out(logText);
+}
+
+void Log::setLogDevice(LogDevice* logDevice, bool useProcessID)
+{
+   Log::useProcessID = useProcessID;
+
+   if ((myLogDevice == 0)&&(logDevice != 0)) // Erstinitialisierung?
+   {
+      mLevel = 0;
+   }
+   myLogDevice = logDevice;
+}
+
+TGString Log::buildlevel()
+{
+   TGString erg;
+   for(int i=0; i < mLevel; i++)
+   {
+      erg = erg + ".  ";
+   }
+   return erg;
+}
+

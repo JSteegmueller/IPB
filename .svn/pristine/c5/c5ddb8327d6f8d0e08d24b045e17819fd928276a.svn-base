@@ -1,0 +1,90 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#include <string.h>
+#pragma hdrstop
+
+#include "MonitorWindow.h"
+#include "TGString.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TMonitorWindow *MonitorWindow;
+//---------------------------------------------------------------------------
+__fastcall TMonitorWindow::TMonitorWindow(TComponent* Owner)
+        : TForm(Owner)
+{
+   maxContentLength = MAX_CONTENT_LENGTH;
+}
+//---------------------------------------------------------------------------
+
+void TMonitorWindow::showContent()
+{
+   try
+   {
+      if (Visible == true)
+      {
+         Caption = AnsiString("Monitorwindow, Bytes=")+theContent.Length();
+
+         RichEdit1->Text = theContent;
+
+         RichEdit1->SelStart = RichEdit1->GetTextLen(); //Cursor ans Ende
+         RichEdit1->Perform(EM_SCROLLCARET, 0, 0);      //Zeile mit Cursor anzeigen
+      }
+   }
+   catch(...){};
+}
+
+void TMonitorWindow::addText(const char* text)
+{
+   if (text !=0)
+   {
+      if ( strlen(text) > 0 )
+      {
+         if (theContent.Length() > maxContentLength)
+         {
+            theContent.SetLength(0);
+            theContent = text;
+         }
+         else
+         {
+            theContent += text;
+         }
+
+         showContent();
+      }
+   }
+}
+
+void TMonitorWindow::clear()
+{
+   theContent = "";
+   showContent();
+}
+
+void __fastcall TMonitorWindow::Button1Click(TObject *Sender)
+{
+   clear();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMonitorWindow::Button2Click(TObject *Sender)
+{
+   TGString text = theContent.c_str();
+   text.writeToFile("c:\\monitor.log");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMonitorWindow::FormShow(TObject *Sender)
+{
+   showContent();
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TMonitorWindow::FormResize(TObject *Sender)
+{
+   RichEdit1->Invalidate();
+}
+//---------------------------------------------------------------------------
+

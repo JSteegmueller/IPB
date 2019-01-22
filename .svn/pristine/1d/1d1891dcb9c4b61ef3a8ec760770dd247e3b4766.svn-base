@@ -1,0 +1,69 @@
+#include "App_Minimal.h"
+#include "Arduino.h"
+#include "TimeBlockFilter.h"
+
+unsigned char eventTimer20ms;
+unsigned int impulszeit = 1500;
+
+#define SERVOPINPOTI 5
+#define SERVOPINSINUS A3
+#define POTIINPUT A0
+
+// Beim Programmstart vor dem Booten
+App_Minimal::App_Minimal()
+{
+}
+
+// Beim Programmstart nach dem Booten
+void App_Minimal::appSetup()
+{
+  eventTimer20ms = setTimerInterrupt(20000);
+  pinMode(SERVOPINPOTI, OUTPUT);
+  pinMode(SERVOPINSINUS, OUTPUT);
+  pinMode(A0, INPUT);
+}
+
+// Nach appSetup und dann immer ca 15000 mal pro Sekunde
+void App_Minimal::appLoop()
+{
+}
+
+int si = 0;
+double mar = 0;
+int i3 = 0;
+
+// Wird immer dann aufgerufen 
+void App_Minimal::appEvent(int idEvent)
+{
+  if (idEvent == eventTimer20ms)
+  {
+     si+=10;
+     if (si>628) si = 0;
+     i3 = sin((double)si/100.0) * 800.0 + 1500.0;
+     if (si%1==0) motorStep();
+     
+     double ar = analogRead(POTIINPUT);
+     mar = (mar * 7.0 + ar)/8.0;
+     impulszeit = 2400-(mar/1023.0*1800.0);
+     int i2 = map(impulszeit, 500, 2500, 410, 2320);
+
+     digitalWrite(SERVOPINPOTI,1);
+     delayMicroseconds(i2);
+     digitalWrite(SERVOPINPOTI,0);
+
+     digitalWrite(SERVOPINSINUS,1);
+     delayMicroseconds(i3);
+     digitalWrite(SERVOPINSINUS,0);
+  }
+}
+
+unsigned char bm[4] = {0x01, 0x04, 0x08, 0x02};
+
+int mi = 0;
+void App_Minimal::motorStep()
+{
+  mi++;
+  if (mi>3) mi = 0;
+   setHalfbyte(6, bm[mi], true);
+
+}

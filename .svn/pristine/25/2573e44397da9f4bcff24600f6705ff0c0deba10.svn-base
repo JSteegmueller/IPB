@@ -1,0 +1,54 @@
+@echo off
+::In diesem Projekt liegen die Masterdokumente der eigenen Moduldateien.
+::Deshalb werden die eigenen Moduldateien NICHT importiert. Sie werden
+:: nur exportiert.
+
+:: Das Clean-Script
+xcopy ..\_AllCode_\_clean.cmd . /Y > nul
+echo Import: _clean.cmd
+echo. 
+
+:: Benötigte Monitoring-Module
+set liste= 
+set liste=%liste% BufferedThreadsaveLogDevice.cpp
+set liste=%liste% BufferedThreadsaveLogDevice.h
+set liste=%liste% FileLogDevice.cpp
+set liste=%liste% FileLogDevice.h
+set liste=%liste% Log.cpp
+set liste=%liste% Log.h
+set liste=%liste% LogDevice.cpp
+set liste=%liste% LogDevice.h
+set liste=%liste% MonitorWindow.cpp
+set liste=%liste% MonitorWindow.h
+set liste=%liste% MonitorWindow.dfm
+set liste=%liste% SystemAPI.cpp
+set liste=%liste% SystemAPI.h
+
+for %%x in (%liste%) do (
+   xcopy ..\_AllCode_\%%x .\Monitoring /Y > nul
+   echo Import: %%x
+)   
+echo. 
+
+:: Benötigte ITG-Framework Fremdmodule
+set liste= 
+set liste=%liste% TGString.cpp 
+set liste=%liste% TGString.h 
+set liste=%liste% ITGEventHandler.cpp 
+set liste=%liste% ITGEventHandler.h 
+set liste=%liste% SystemAPI.cpp 
+set liste=%liste% SystemAPI.h 
+set liste=%liste% WindowsSocketApi.h
+set liste=%liste% WindowsSocketApi.cpp
+set liste=%liste% Thread.cpp 
+set liste=%liste% Thread.h 
+
+for %%x in (%liste%) do (
+   xcopy ..\_AllCode_\%%x .\benoetigte_Module /Y > nul
+   echo Import: %%x
+)
+echo. 
+
+
+if not "%1"=="continue" pause
+rem http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/xcopy.mspx?mfr=true

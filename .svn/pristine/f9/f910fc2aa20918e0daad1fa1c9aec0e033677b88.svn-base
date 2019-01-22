@@ -1,0 +1,234 @@
+#include "LCD_HD44780.h"
+#include "LCD_AbstractTransmiter.h"
+#include <string.h>
+
+LCD_HD44780::LCD_HD44780(LCD_AbstractTransmiter* anyTransmitter)
+{
+  myTransmitter = anyTransmitter;
+}
+
+void LCD_HD44780::begin(unsigned char cols, unsigned char lines, unsigned char dotsize)
+{
+  _numlines = lines;
+
+  _row_offsets[0] = 0x00;
+  _row_offsets[1] = 0x40;
+  _row_offsets[2] = 0x00 + cols;
+  _row_offsets[3] = 0x40 + cols;
+
+  _displayfunction = 0;
+
+  if (myTransmitter->uses4Bit())
+    _displayfunction |= LCD_4BITMODE;
+  else
+    _displayfunction |= LCD_8BITMODE;
+
+  if (lines > 1)
+  {
+    _displayfunction |= LCD_2LINE;
+  }
+  else
+  {
+    _displayfunction |= LCD_1LINE;
+  }
+
+  // for some 1 line displays you can select a 10 pixel high font
+  if ((dotsize != LCD_5x8DOTS) && (lines == 1))
+  {
+    _displayfunction |= LCD_5x10DOTS;
+  }
+  else
+  {
+    _displayfunction |= LCD_5x8DOTS;
+  }
+
+  // Now we pull both RS and R/W low to begin commands
+  myTransmitter->setValueRSPin(LCD_RSPIN_INSTRUCTION);
+  myTransmitter->setValueEnableDataPin(LCD_E_PULSE_READY);
+  myTransmitter->setValueRWPin(LCD_RWPIN_WRITE);
+
+  //put the LCD into 4 bit or 8 bit transmission mode
+  if (myTransmitter->uses4Bit())
+  {
+    // 4 Bit special initalisation sequence:
+    // This is according to the hitachi HD44780 datasheet
+    // figure 24, pg 46
+
+    // we start in 8bit mode, try to set 4 bit mode
+    myTransmitter->sendBitsAndWait(0x03, 4500); // wait min 4.1ms
+
+    // second try
+    myTransmitter->sendBitsAndWait(0x03, 4500); // wait min 4.1ms
+
+    // third go!
+    myTransmitter->sendBitsAndWait(0x03, 150);
+
+    // finally, set to 4-bit interface
+    myTransmitter->sendBitsAndWait(0x02, 0);
+  }
+  else
+  {
+    // this is according to the hitachi HD44780 datasheet
+    // page 45 figure 23
+
+    // sendByte function set command sequence
+    myTransmitter->sendByteAndWait(LCD_FUNCTIONSET | _displayfunction, LCD_RSPIN_INSTRUCTION, 4500); // wait more than 4.1ms
+
+    // second try
+    myTransmitter->sendByteAndWait(LCD_FUNCTIONSET | _displayfunction, LCD_RSPIN_INSTRUCTION, 150);
+
+    // third go
+    myTransmitter->sendByte(LCD_FUNCTIONSET | _displayfunction, LCD_RSPIN_INSTRUCTION);
+  }
+
+  // finally, set # lines, font size, etc.
+  myTransmitter->sendByte(LCD_FUNCTIONSET | _displayfunction, LCD_RSPIN_INSTRUCTION);
+
+  // turn the display on with no cursor or blinking default
+  _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
+  display();
+
+  // clear it off
+  clear();
+
+  // Initialize to default text direction (for romance languages)
+  _displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
+  // set the entry mode
+  myTransmitter->sendByte(LCD_ENTRYMODESET | _displaymode, LCD_RSPIN_INSTRUCTION);
+}
+
+/********** high level commands, for the user! */
+void LCD_HD44780::clear()
+{
+  myTransmitter->sendByteAndWait(LCD_CLEARDISPLAY, LCD_RSPIN_INSTRUCTION, 2000);
+}
+
+void LCD_HD44780::home()
+{
+  myTransmitter->sendByteAndWait(LCD_RETURNHOME, LCD_RSPIN_INSTRUCTION, 2000);
+}
+
+void LCD_HD44780::setCursor(unsigned char col, unsigned char row)
+{
+  const unsigned long int max_lines = sizeof(_row_offsets) / sizeof(*_row_offsets);
+  if ( row >= max_lines )
+  {
+    row = max_lines - 1;    // we count rows starting w/0
+  }
+
+  if ( row >= _numlines )
+  {
+    row = _numlines - 1;    // we count rows starting w/0
+  }
+
+  myTransmitter->sendByte(LCD_SETDDRAMADDR | (col + _row_offsets[row]), LCD_RSPIN_INSTRUCTION);
+}
+
+// Turn the display on/off (quickly)
+void LCD_HD44780::noDisplay()
+{
+  _displaycontrol &= ~LCD_DISPLAYON;
+  myTransmitter->sendByte(LCD_DISPLAYCONTROL | _displaycontrol, LCD_RSPIN_INSTRUCTION);
+}
+
+void LCD_HD44780::display()
+{
+  _displaycontrol |= LCD_DISPLAYON;
+  myTransmitter->sendByte(LCD_DISPLAYCONTROL | _displaycontrol, LCD_RSPIN_INSTRUCTION);
+}
+
+// Turns the underline cursor on/off
+void LCD_HD44780::noCursor()
+{
+  _displaycontrol &= ~LCD_CURSORON;
+  myTransmitter->sendByte(LCD_DISPLAYCONTROL | _displaycontrol, LCD_RSPIN_INSTRUCTION);
+}
+
+void LCD_HD44780::cursor()
+{
+  _displaycontrol |= LCD_CURSORON;
+  myTransmitter->sendByte(LCD_DISPLAYCONTROL | _displaycontrol, LCD_RSPIN_INSTRUCTION);
+}
+
+// Turn on and off the blinking cursor
+void LCD_HD44780::noBlink()
+{
+  _displaycontrol &= ~LCD_BLINKON;
+  myTransmitter->sendByte(LCD_DISPLAYCONTROL | _displaycontrol, LCD_RSPIN_INSTRUCTION);
+}
+
+void LCD_HD44780::blink()
+{
+  _displaycontrol |= LCD_BLINKON;
+  myTransmitter->sendByte(LCD_DISPLAYCONTROL | _displaycontrol, LCD_RSPIN_INSTRUCTION);
+}
+
+// These commands scroll the display without changing the RAM
+void LCD_HD44780::scrollDisplayLeft(void)
+{
+  myTransmitter->sendByte(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT, LCD_RSPIN_INSTRUCTION);
+}
+
+void LCD_HD44780::scrollDisplayRight(void)
+{
+  myTransmitter->sendByte(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT, LCD_RSPIN_INSTRUCTION);
+}
+
+// This is for text that flows Left to Right
+void LCD_HD44780::leftToRight(void)
+{
+  _displaymode |= LCD_ENTRYLEFT;
+  myTransmitter->sendByte(LCD_ENTRYMODESET | _displaymode, LCD_RSPIN_INSTRUCTION);
+}
+
+// This is for text that flows Right to Left
+void LCD_HD44780::rightToLeft(void)
+{
+  _displaymode &= ~LCD_ENTRYLEFT;
+  myTransmitter->sendByte(LCD_ENTRYMODESET | _displaymode, LCD_RSPIN_INSTRUCTION);
+}
+
+// This will 'right justify' text from the cursor
+void LCD_HD44780::autoscroll(void)
+{
+  _displaymode |= LCD_ENTRYSHIFTINCREMENT;
+  myTransmitter->sendByte(LCD_ENTRYMODESET | _displaymode, LCD_RSPIN_INSTRUCTION);
+}
+
+// This will 'left justify' text from the cursor
+void LCD_HD44780::noAutoscroll(void)
+{
+  _displaymode &= ~LCD_ENTRYSHIFTINCREMENT;
+  myTransmitter->sendByte(LCD_ENTRYMODESET | _displaymode, LCD_RSPIN_INSTRUCTION);
+}
+
+// Allows us to fill the first 8 CGRAM locations
+// with custom characters
+void LCD_HD44780::createChar(unsigned char location, unsigned char charmap[])
+{
+  location &= 0x7; // we only have 8 locations 0-7
+  myTransmitter->sendByte(LCD_SETCGRAMADDR | (location << 3), LCD_RSPIN_INSTRUCTION);
+
+  for (int i = 0; i < 8; i++)
+  {
+    myTransmitter->sendByte(charmap[i], LCD_RSPIN_DATA);
+  }
+}
+
+void LCD_HD44780::write(const char c)
+{
+  myTransmitter->sendByte(c, LCD_RSPIN_DATA);
+}
+
+void LCD_HD44780::write(const char* c_string)
+{
+  if (c_string == 0) return;
+  const unsigned char* buffer = (const unsigned char *)c_string;
+  unsigned long int    size   = strlen(c_string);
+  while (size--)
+  {
+    write(*buffer++);
+  }
+}
+
+

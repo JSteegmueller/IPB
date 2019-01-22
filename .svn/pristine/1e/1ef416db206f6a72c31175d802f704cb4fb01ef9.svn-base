@@ -1,0 +1,65 @@
+#define SENSOR_2  A0
+#define SENSOR_4  A1
+
+
+double val = 0;
+int links = 4;
+int rechts = 6;
+int fahren = 9;
+int richtung = 5;
+int val2;
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(links, OUTPUT);
+  pinMode(rechts, OUTPUT);
+  pinMode(fahren, OUTPUT);
+
+  pinMode(SENSOR_2, INPUT);
+
+  digitalWrite(links, 1);
+  delay(1000);
+  digitalWrite(links, 0);
+  delay(1000);
+
+  digitalWrite(rechts, 1);
+  delay(1000);
+  digitalWrite(rechts, 0);
+
+  analogWrite(fahren, 180); //umgekehrte LOGIK 255 == 0 170 =  gut
+  // analogWrite(richtung, 255);
+
+}
+
+void loop()
+{ /*
+  analogWrite(richtung, 255);
+  delay(1000);
+  analogWrite(richtung, 0);
+  delay(1000);
+*/
+
+  /*
+   val = analogRead(10);
+   delay(1000);
+   Serial.println(val); */
+   
+   val = analogRead(SENSOR_4);
+   val2 = analogRead(SENSOR_2);
+
+   if( val > 200)
+   {
+      digitalWrite(richtung,1);
+      Serial.println("Wechsel-->"); 
+      delay(2000);  
+   }
+   
+   if( val2 > 350)
+   {
+      digitalWrite(richtung,0);
+      Serial.println("Wechsel<--");
+      delay(2000);  
+   } 
+   
+}

@@ -1,0 +1,32 @@
+@echo off
+::Nur die Dateien des eigenen Moduls
+
+set MODULORDNERNAME=TCP_Socket
+
+:: Moduldateien
+set liste= 
+set liste=%liste% AddressFamilyInternetSocketHelper.h 
+set liste=%liste% AddressFamilyInternetSocketHelper.cpp 
+set liste=%liste% ClientSocket.h 
+set liste=%liste% ClientSocket.cpp 
+set liste=%liste% ConnectionSocket.h 
+set liste=%liste% ConnectionSocket.cpp 
+set liste=%liste% ConnectionSocketListe.h 
+set liste=%liste% ConnectionSocketListe.cpp 
+set liste=%liste% ConnectionSocketPool.h 
+set liste=%liste% ConnectionSocketPool.cpp 
+set liste=%liste% TCP_Client.h
+set liste=%liste% TCP_Client.cpp
+set liste=%liste% TCP_Server.h
+set liste=%liste% TCP_Server.cpp
+set liste=%liste% TCP_Socket_ClassDeclarations.h
+
+for %%x in (%liste%) do (
+   xcopy ".\%MODULORDNERNAME%\%%x" "..\_AllCode_\*" /Y > nul
+   echo Export: %%x
+)
+echo. 
+
+if not "%1"=="continue" pause
+
+rem http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/xcopy.mspx?mfr=true

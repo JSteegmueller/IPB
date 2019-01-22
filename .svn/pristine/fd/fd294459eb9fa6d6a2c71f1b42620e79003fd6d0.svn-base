@@ -1,0 +1,2274 @@
+Jumli
+{
+  *** Applikation ***;
+  Version=1.4;
+  Elements=263;
+  {
+    *** Model ***;
+    Typ=2;
+    MainFile="main.cpp";
+    ActiveDiagramm=8;
+    {
+      *** GenSettings ***;
+      GetPrefix="Get";
+      SetPrefix="Set";
+      DBBaseClass="DbBasisObject";
+      DBRecordSet="DbSet";
+      GenerateWrite=true;
+      GenerateRead=true;
+    };
+    {
+      *** CompileDebugSettings ***;
+      AufrufCompiler="g++";
+      AufrufDebugger="gdb";
+      DebugOptionen="-nw";
+    };
+    {
+      *** Package ***;
+      Name="UseCases";
+      ID=3;
+      Zugriff=2;
+      Type=2;
+      {
+        *** Diagramm ***;
+        Name="UseCases";
+        ID=4;
+        DiagrammTyp=2;
+      };
+    };
+    {
+      *** Package ***;
+      Name="tcp";
+      ID=5;
+      Zugriff=2;
+      {
+        *** Diagramm ***;
+        Name="tcp";
+        ID=6;
+      };
+      {
+        *** Package ***;
+        Name="CPP";
+        ID=7;
+        Zugriff=2;
+        {
+          *** Diagramm ***;
+          Name="CPP";
+          ID=8;
+          {
+            *** CJumliTracker ***;
+            Rechteck=335,419,511,494;
+            Order=-1;
+            UMLElementID=18;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=453,227,583,302;
+            Order=-1;
+            UMLElementID=29;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=198,12,369,87;
+            Order=-1;
+            UMLElementID=45;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=128,254,259,329;
+            Order=-1;
+            UMLElementID=80;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=310,322,590,397;
+            Order=-1;
+            UMLElementID=89;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=649,382,848,471;
+            Order=-1;
+            UMLElementID=96;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsWithParameters=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=21,364,197,467;
+            Order=-1;
+            UMLElementID=126;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=198,123,325,226;
+            Order=-1;
+            UMLElementID=137;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=11,10,178,85;
+            Order=-1;
+            UMLElementID=159;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** CJumliTracker ***;
+            Rechteck=486,30,709,175;
+            Order=-1;
+            UMLElementID=246;
+            IsWithAttributs=true;
+            IsWithMethods=true;
+            IsHidePrivate=true;
+            IsHideTaggedValue=true;
+          };
+          {
+            *** VererbungZeichner ***;
+            Rechteck=137,174,144,181;
+            Order=-1;
+            UMLElementID=26;
+            TextOffset=0,5;
+          };
+          {
+            *** VererbungZeichner ***;
+            Order=-1;
+            UMLElementID=95;
+            TextOffset=0,5;
+          };
+          {
+            *** VererbungZeichner ***;
+            Order=-1;
+            UMLElementID=88;
+            TextOffset=0,5;
+          };
+          {
+            *** VererbungZeichner ***;
+            Order=-1;
+            UMLElementID=44;
+            TextOffset=0,5;
+          };
+          {
+            *** VererbungZeichner ***;
+            Rechteck=324,192,331,199;
+            Order=-1;
+            UMLElementID=158;
+            TextOffset=0,5;
+          };
+          {
+            *** AssoziationZeichner ***;
+            Rechteck=517,685,579,699;
+            Order=-1;
+            UMLElementID=136;
+            TextOffset=0,5;
+            OffsetRollenName=45,30;
+            OffsetA=5,5;
+            OffsetB=5,5;
+          };
+          {
+            *** AssoziationZeichner ***;
+            Rechteck=299,273,365,287;
+            Order=-1;
+            UMLElementID=156;
+            TextOffset=0,5;
+            OffsetRollenName=-54,-23;
+            OffsetA=5,5;
+            OffsetB=5,5;
+          };
+          {
+            *** AssoziationZeichner ***;
+            Rechteck=277,97,388,111;
+            Order=-1;
+            UMLElementID=157;
+            TextOffset=0,5;
+            OffsetRollenName=72,-24;
+            OffsetA=5,5;
+            OffsetB=5,5;
+          };
+          {
+            *** AssoziationZeichner ***;
+            Rechteck=346,202,477,216;
+            Order=-1;
+            UMLElementID=43;
+            TextOffset=0,5;
+            OffsetRollenName=55,-5;
+            OffsetA=5,5;
+            OffsetB=5,5;
+          };
+          {
+            *** AssoziationZeichner ***;
+            Rechteck=112,200,181,214;
+            Order=-1;
+            UMLElementID=198;
+            TextOffset=0,5;
+            OffsetRollenName=-18,-20;
+            OffsetA=5,5;
+            OffsetB=5,5;
+          };
+          {
+            *** AssoziationZeichner ***;
+            Rechteck=16,329,80,343;
+            Order=-1;
+            UMLElementID=202;
+            TextOffset=0,5;
+            OffsetRollenName=-46,1;
+            OffsetA=5,5;
+            OffsetB=5,5;
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="BufferedThreadsaveLogDevice";
+          ID=9;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\BufferedThreadsaveLogDevice.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\BufferedThreadsaveLogDevice.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="mutexAccessBlocked";
+            ID=10;
+            Datentyp="bool";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="BufferedThreadsaveLogDevice";
+            ID=11;
+          };
+          {
+            *** Methode ***;
+            Name="getText";
+            ID=12;
+            RueckgabeWert="TGString";
+          };
+          {
+            *** Methode ***;
+            Name="out";
+            ID=13;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="toLog";
+              ID=14;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~BufferedThreadsaveLogDevice";
+            ID=15;
+          };
+          {
+            *** Aggregation ***;
+            ID=16;
+            Zugriff=2;
+            A=9;
+            B=211;
+            RollenName="derText";
+          };
+          {
+            *** Vererbung ***;
+            ID=17;
+            A=9;
+            B=75;
+            BasisKlasse="LogDev";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="ClientSocket";
+          ID=18;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\ClientSocket.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\ClientSocket.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Methode ***;
+            Name="disconnectFromServer";
+            ID=19;
+            RueckgabeWert="void";
+            InlineTyp=1;
+          };
+          {
+            *** Methode ***;
+            Name="initAndConnectToServer";
+            ID=20;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="serverAddress";
+              ID=21;
+              Typ="char*";
+            };
+            {
+              *** Parameter ***;
+              Name="serverPort";
+              ID=22;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="sendData";
+            ID=23;
+            RueckgabeWert="bool";
+            {
+              *** Parameter ***;
+              Name="data";
+              ID=24;
+              Typ="void*";
+            };
+            {
+              *** Parameter ***;
+              Name="anzahlBytes";
+              ID=25;
+              Typ="int";
+            };
+          };
+          {
+            *** Vererbung ***;
+            ID=26;
+            A=18;
+            B=96;
+            BasisKlasse="SmartSocket";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="ClientThread";
+          ID=27;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\ClientThread.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Vererbung ***;
+            ID=28;
+            A=27;
+            B=246;
+            BasisKlasse="Thread";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="ConnectionSocket";
+          ID=29;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\ConnectionSocket.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\ConnectionSocket.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="buffer[CONECTION_BUFFER_LENGTH]";
+            ID=30;
+            Datentyp="char";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="clientAddress";
+            ID=31;
+            Datentyp="char*";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="clientPort";
+            ID=32;
+            Datentyp="int";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Doku=" Socketeigenschaften";
+            Name="derSocket";
+            ID=33;
+            Datentyp="SOCKET";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="family";
+            ID=34;
+            Datentyp="int";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="ConnectionSocket";
+            ID=35;
+            {
+              *** Parameter ***;
+              Name="einSocket";
+              ID=36;
+              Typ="SOCKET &";
+            };
+            {
+              *** Parameter ***;
+              Name="clientAddressInformation";
+              ID=37;
+              Typ="SOCKADDR_IN &";
+            };
+            {
+              *** Parameter ***;
+              Name="pEinServerProzessHandler";
+              ID=38;
+              Typ="TCP_Server*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="close";
+            ID=39;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Name="isActive";
+            ID=40;
+            RueckgabeWert="bool";
+            InlineTyp=1;
+          };
+          {
+            *** Methode ***;
+            Doku=" this method starts with the new forked thread";
+            Name="threadNewRun";
+            ID=41;
+            Zugriff=2;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="runParameter";
+              ID=42;
+              Typ="void*";
+            };
+          };
+          {
+            *** Aggregation ***;
+            Doku=" Objekt an- und abmelden, Callbackfunktionalität";
+            ID=43;
+            Zugriff=2;
+            A=29;
+            B=137;
+            RollenName="pDerServerProzessHandler";
+          };
+          {
+            *** Vererbung ***;
+            ID=44;
+            A=29;
+            B=246;
+            BasisKlasse="Thread";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="ConnectionSocketPool";
+          ID=45;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\ConnectionSocketPool.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\ConnectionSocketPool.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="connectionSocketList";
+            ID=46;
+            Datentyp="std::vector<ConnectionSocket*>";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="addSocket";
+            ID=47;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="newConnectionSocket";
+              ID=48;
+              Typ="ConnectionSocket*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="deleteAllClosedSockets";
+            ID=49;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Name="deleteAllSockets";
+            ID=50;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Name="deleteConnectionSocket";
+            ID=51;
+            Zugriff=2;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="deleteObject";
+              ID=52;
+              Typ="ConnectionSocket*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="out";
+            ID=53;
+            Zugriff=2;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="EX";
+              ID=54;
+              Typ="TGString";
+            };
+            {
+              *** Parameter ***;
+              Name="s";
+              ID=55;
+              Typ="TGString";
+            };
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="FileLogDevice";
+          ID=56;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\FileLogDevice.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\FileLogDevice.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="mFile";
+            ID=57;
+            Datentyp="char*";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="FileLogDevice";
+            ID=58;
+            {
+              *** Parameter ***;
+              Name="file";
+              ID=59;
+              Typ="char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="out";
+            ID=60;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="toLog";
+              ID=61;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="print";
+            ID=62;
+            Zugriff=2;
+            RueckgabeWert="int";
+            {
+              *** Parameter ***;
+              Name="a";
+              ID=63;
+              Typ="const char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~FileLogDevice";
+            ID=64;
+          };
+          {
+            *** Vererbung ***;
+            ID=65;
+            A=56;
+            B=75;
+            BasisKlasse="LogDev";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="Log";
+          ID=66;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\Log.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\Log.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="mLevel";
+            ID=67;
+            Datentyp="int";
+            IsStatic=true;
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="buildlevel";
+            ID=68;
+            IsStatic=true;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+          };
+          {
+            *** Methode ***;
+            Name="init";
+            ID=69;
+            IsStatic=true;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="dev";
+              ID=70;
+              Typ="LogDev*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="out";
+            ID=71;
+            IsStatic=true;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="logText";
+              ID=72;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Aggregation ***;
+            ID=73;
+            Zugriff=2;
+            A=66;
+            B=75;
+            RollenName="mLD";
+          };
+          {
+            *** Aggregation ***;
+            ID=74;
+            Zugriff=2;
+            A=66;
+            B=211;
+            RollenName="mS";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="LogDev";
+          ID=75;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\LogDev.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\LogDev.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Methode ***;
+            Name="LogDev";
+            ID=76;
+          };
+          {
+            *** Methode ***;
+            Doku=" Muss virtual sein, damit Ableitung als Basisklassenzeiger (auf LogDev*) \
+            gehalten werden kann. Somit wird Destruktor der abgeleiteten Klasse aufgerufen. \
+            Zugriff auf diesen Destruktor erfolgt im Anschluss dennoch automatisch.";
+            Name="out";
+            ID=77;
+            IsAbstract=true;
+            IsVirtual=true;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="toLog";
+              ID=78;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~LogDev";
+            ID=79;
+            IsVirtual=true;
+          };
+        };
+        {
+          *** Klasse ***;
+          Doku=" Implementierung der abstrakten Klasse";
+          Name="MyServer";
+          ID=80;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\MyServer.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\MyServer.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="RichEdit1";
+            ID=81;
+            Datentyp="TRichEdit*";
+          };
+          {
+            *** Methode ***;
+            Name="MyServer";
+            ID=82;
+          };
+          {
+            *** Methode ***;
+            Doku=" Imolementiert abstrakte Methode";
+            Name="dataReceived";
+            ID=83;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="data";
+              ID=84;
+              Typ="char*";
+            };
+            {
+              *** Parameter ***;
+              Name="laenge";
+              ID=85;
+              Typ="int";
+            };
+            {
+              *** Parameter ***;
+              Name="clientAdresse";
+              ID=86;
+              Typ="char*";
+            };
+            {
+              *** Parameter ***;
+              Name="clientPort";
+              ID=87;
+              Typ="int";
+            };
+          };
+          {
+            *** Vererbung ***;
+            ID=88;
+            A=80;
+            B=137;
+            BasisKlasse="TCP_Server";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="ServerSocket";
+          ID=89;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\ServerSocket.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\ServerSocket.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Methode ***;
+            Name="close";
+            ID=90;
+            RueckgabeWert="void";
+            InlineTyp=1;
+          };
+          {
+            *** Methode ***;
+            Name="initBindAndListen";
+            ID=91;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="port";
+              ID=92;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="waitAndAcceptNewConnection";
+            ID=93;
+            RueckgabeWert="ConnectionSocket*";
+            {
+              *** Parameter ***;
+              Name="derHandler";
+              ID=94;
+              Typ="TCP_Server*";
+            };
+          };
+          {
+            *** Vererbung ***;
+            ID=95;
+            A=89;
+            B=96;
+            BasisKlasse="SmartSocket";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="StdlibException";
+          ID=103;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\StdlibException.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="text";
+            ID=104;
+            Datentyp="char*";
+            Zugriff=2;
+          };
+          {
+            *** Vererbung ***;
+            ID=105;
+            A=103;
+            B=-1;
+            BasisKlasse="exception";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="SystemAPI";
+          ID=106;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\SystemAPI.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\SystemAPI.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="ticksPerMykrosec";
+            ID=107;
+            Datentyp="double";
+            IsStatic=true;
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="get100MykroSecSinceSystemstart";
+            ID=108;
+            IsStatic=true;
+            RueckgabeWert="long int";
+          };
+          {
+            *** Methode ***;
+            Name="getIP";
+            ID=109;
+            IsStatic=true;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="interfaceIndex";
+              ID=110;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="getMsSinceSystemstart";
+            ID=111;
+            IsStatic=true;
+            RueckgabeWert="long int";
+          };
+          {
+            *** Methode ***;
+            Name="getTicksPerMykrosec";
+            ID=112;
+            IsStatic=true;
+            RueckgabeWert="double";
+          };
+          {
+            *** Methode ***;
+            Name="getTimeDDMMYYY_hhmmss";
+            ID=113;
+            IsStatic=true;
+            RueckgabeWert="TGString";
+          };
+          {
+            *** Methode ***;
+            Name="initWinSockDll";
+            ID=114;
+            IsStatic=true;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="error";
+              ID=115;
+              Typ="TGString*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="sleep";
+            ID=116;
+            IsStatic=true;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="ms";
+              ID=117;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="taskleisteAusblenden";
+            ID=118;
+            IsStatic=true;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Name="taskleisteEinblenden";
+            ID=119;
+            IsStatic=true;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Doku=" Checks if the given Thread is running";
+            Name="threadExitAndFreeStructure";
+            ID=120;
+            IsStatic=true;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="threadHandle";
+              ID=121;
+              Typ="void*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="threadGetCurrentID";
+            ID=122;
+            IsStatic=true;
+            RueckgabeWert="int";
+          };
+          {
+            *** Methode ***;
+            Name="threadIsRunning";
+            ID=123;
+            IsStatic=true;
+            RueckgabeWert="bool";
+            {
+              *** Parameter ***;
+              Name="threadHandle";
+              ID=124;
+              Typ="void*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="threadKillAllThreadsExceptThisOfCurrentProcess";
+            ID=125;
+            IsStatic=true;
+            RueckgabeWert="void";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="TCP_Client";
+          ID=126;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\TCP_Client.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\TCP_Client.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Methode ***;
+            Name="TCP_Client";
+            ID=127;
+          };
+          {
+            *** Methode ***;
+            Name="disconnectFromServer";
+            ID=128;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Name="initAndConnectToServer";
+            ID=129;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="serverAddress";
+              ID=130;
+              Typ="char*";
+            };
+            {
+              *** Parameter ***;
+              Name="serverPort";
+              ID=131;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="sendData";
+            ID=132;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="data";
+              ID=133;
+              Typ="void*";
+            };
+            {
+              *** Parameter ***;
+              Name="anzahlBytes";
+              ID=134;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~TCP_Client";
+            ID=135;
+          };
+          {
+            *** Aggregation ***;
+            ID=136;
+            Datentyp="ClientSocket*";
+            Zugriff=2;
+            A=126;
+            B=18;
+            RollenName="clientSocket";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="TCP_IP_Socket";
+          ID=96;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\SmartSocket.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\SmartSocket.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Doku=" Socket-Adressinformationen";
+            Name="winSocket";
+            ID=97;
+            Datentyp="SOCKET";
+            Zugriff=1;
+          };
+          {
+            *** Attribut ***;
+            Name="winSocketAddress";
+            ID=98;
+            Datentyp="SOCKADDR_IN";
+            Zugriff=1;
+          };
+          {
+            *** Methode ***;
+            Name="getWinSocket";
+            ID=99;
+            Zugriff=1;
+            RueckgabeWert="public:\n   SOCKET";
+            InlineTyp=1;
+          };
+          {
+            *** Methode ***;
+            Name="init";
+            ID=100;
+            Zugriff=1;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="address";
+              ID=101;
+              Typ="char*";
+            };
+            {
+              *** Parameter ***;
+              Name="port";
+              ID=102;
+              Typ="int";
+            };
+          };
+        };
+        {
+          *** Klasse ***;
+          Doku=" Info:\n#########################\nhttp://www.willemer.de/informatik/unix/unprsock.htm\n#########################\nstruct \
+          sockaddr_in \{\n  sa_familiy_t sin_familiy;  // AF_INET\n  in_port_t    \
+          sin_port;     // 16-bit TCP or UDP port number\n                             \
+          // network byte ordered\n  struct       sin_addr;     // 32-bit IPv4 address\n                             \
+          // network byte ordered\n  char         sin_zero[8];\n\};\n\n#########################\nhttp://msdn.microsoft.com/en-us/library/ms740476%28VS.85%29.aspx\nint \
+          setsockopt(              // returns Errorcode\n  __in  SOCKET      s,       \
+          // A descriptor that identifies a socket\n  __in  int         level,   \
+          // The level at which the option is defined (for example, SOL_SOCKET)\n  \
+          __in  int         optname, // The socket option for which the value is \
+          to be set (for example, SO_BROADCAST)\n  __in  const char* optval,  // \
+          A pointer to the buffer in which the value for the requested option is \
+          specified\n  __in  int         optlen   // The size, in bytes, of the buffer \
+          pointed to by the optval parameter\n);";
+          Name="TCP_Server";
+          ID=137;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\TCP_Server.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\TCP_Server.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="listenPort";
+            ID=138;
+            Datentyp="int";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="waitForConnection";
+            ID=139;
+            Datentyp="bool";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="StartReceive";
+            ID=140;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="listenPort";
+              ID=141;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="StopReceive";
+            ID=142;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Name="TCP_Server";
+            ID=143;
+          };
+          {
+            *** Methode ***;
+            Name="dataReceived";
+            ID=144;
+            IsVirtual=true;
+            RueckgabeWert="void";
+            InlineTyp=1;
+            {
+              *** Parameter ***;
+              Name="data";
+              ID=145;
+              Typ="char*";
+            };
+            {
+              *** Parameter ***;
+              Name="laenge";
+              ID=146;
+              Typ="int";
+            };
+            {
+              *** Parameter ***;
+              Name="clientAdresse";
+              ID=147;
+              Typ="char*";
+            };
+            {
+              *** Parameter ***;
+              Name="clientPort";
+              ID=148;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="out";
+            ID=149;
+            Zugriff=2;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="EX";
+              ID=150;
+              Typ="TGString";
+            };
+            {
+              *** Parameter ***;
+              Name="s";
+              ID=151;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Doku=" this method starts with the new forked thread";
+            Name="serverSocket_InitBindAndListen";
+            ID=152;
+            Zugriff=2;
+            RueckgabeWert="void";
+          };
+          {
+            *** Methode ***;
+            Name="threadNewRun";
+            ID=153;
+            Zugriff=2;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="runParameter";
+              ID=154;
+              Typ="void*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~TCP_Server";
+            ID=155;
+          };
+          {
+            *** Aggregation ***;
+            ID=156;
+            Datentyp="ServerSocket*";
+            Zugriff=2;
+            A=137;
+            B=89;
+            RollenName="serverSocket";
+          };
+          {
+            *** Aggregation ***;
+            ID=157;
+            Datentyp="ConnectionSocketPool";
+            A=137;
+            B=45;
+            RollenName="connectionSocketPool";
+          };
+          {
+            *** Vererbung ***;
+            ID=158;
+            A=137;
+            B=246;
+            BasisKlasse="Thread";
+          };
+        };
+        {
+          *** Klasse ***;
+          Doku="#define useLogWindow---------------------------------------------------------------------------";
+          Name="TForm1";
+          ID=159;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\Unit1.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\Unit1.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="Button1";
+            ID=160;
+            Datentyp="TButton";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="ButtonClear";
+            ID=161;
+            Datentyp="TButton";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="ButtonCloseConnection";
+            ID=162;
+            Datentyp="TButton";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="ButtonOpenConnection";
+            ID=163;
+            Datentyp="TButton";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Doku=" Von der IDE verwaltete Komponenten";
+            Name="ButtonSend";
+            ID=164;
+            Datentyp="TButton";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Doku=" Von der IDE verwaltete Komponenten";
+            Name="ButtonStartReceive";
+            ID=165;
+            Datentyp="TButton";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="ButtonStopReceive";
+            ID=166;
+            Datentyp="TButton";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="Edit1";
+            ID=167;
+            Datentyp="TEdit";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="Edit2";
+            ID=168;
+            Datentyp="TEdit";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="Edit3";
+            ID=169;
+            Datentyp="TEdit";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="Label1";
+            ID=170;
+            Datentyp="TLabel";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="Label2";
+            ID=171;
+            Datentyp="TLabel";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="RichEdit1";
+            ID=172;
+            Datentyp="TRichEdit";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="Timer1";
+            ID=173;
+            Datentyp="TTimer";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="Button1Click";
+            ID=174;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=175;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="ButtonClearClick";
+            ID=176;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=177;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="ButtonCloseConnectionClick";
+            ID=178;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=179;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="ButtonOpenConnectionClick";
+            ID=180;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=181;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="ButtonSendClick";
+            ID=182;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=183;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="ButtonStartReceiveClick";
+            ID=184;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=185;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="ButtonStopReceiveClick";
+            ID=186;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=187;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="FormClose";
+            ID=188;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=189;
+              Typ="TObject *";
+            };
+            {
+              *** Parameter ***;
+              Name="Action";
+              ID=190;
+              Typ="TCloseAction &";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="MyWndProc";
+            ID=191;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Message";
+              ID=192;
+              Typ="Messages::TMessage &";
+            };
+          };
+          {
+            *** Methode ***;
+            Doku=" Anwender-Deklarationen";
+            Name="TForm1";
+            ID=193;
+            RueckgabeWert="__fastcall";
+            {
+              *** Parameter ***;
+              Name="Owner";
+              ID=194;
+              Typ="TComponent*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="Timer1Timer";
+            ID=195;
+            Zugriff=2;
+            RueckgabeWert="void __fastcall";
+            {
+              *** Parameter ***;
+              Name="Sender";
+              ID=196;
+              Typ="TObject *";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~TForm1";
+            ID=197;
+            RueckgabeWert="__fastcall";
+          };
+          {
+            *** Aggregation ***;
+            Doku=" Anwender-Deklarationen";
+            ID=198;
+            Datentyp="MyServer*";
+            Zugriff=2;
+            A=159;
+            B=80;
+            RollenName="mp_derServer";
+          };
+          {
+            *** Aggregation ***;
+            ID=199;
+            Datentyp="BufferedThreadsaveLogDevice*";
+            Zugriff=2;
+            A=159;
+            B=9;
+            RollenName="mp_logDevice";
+          };
+          {
+            *** Aggregation ***;
+            ID=200;
+            Datentyp="FileLogDevice*";
+            Zugriff=2;
+            A=159;
+            B=56;
+            RollenName="mp_logDevice";
+          };
+          {
+            *** Aggregation ***;
+            Doku=" Anwender-Deklarationen";
+            ID=201;
+            Datentyp="FileLogDevice*";
+            Zugriff=2;
+            A=159;
+            B=56;
+            RollenName="mp_fileLogDevice";
+          };
+          {
+            *** Aggregation ***;
+            ID=202;
+            Datentyp="TCP_Client*";
+            Zugriff=2;
+            A=159;
+            B=126;
+            RollenName="mp_derClient";
+          };
+          {
+            *** Vererbung ***;
+            ID=203;
+            A=159;
+            B=-1;
+            BasisKlasse="TForm";
+          };
+        };
+        {
+          *** Klasse ***;
+          Doku="---------------------------------------------------------------------------";
+          Name="TForm3";
+          ID=204;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\Unit3.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\Unit3.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Doku=" Von der IDE verwaltete Komponenten";
+            Name="RichEdit1";
+            ID=205;
+            Datentyp="TRichEdit";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Doku=" Anwender-Deklarationen";
+            Name="TForm3";
+            ID=206;
+            RueckgabeWert="__fastcall";
+            {
+              *** Parameter ***;
+              Name="Owner";
+              ID=207;
+              Typ="TComponent*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="addText";
+            ID=208;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="line";
+              ID=209;
+              Typ="const char*";
+            };
+          };
+          {
+            *** Vererbung ***;
+            ID=210;
+            A=204;
+            B=-1;
+            BasisKlasse="TForm";
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="TGString";
+          ID=211;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\TGString.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\TGString.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="text";
+            ID=212;
+            Datentyp="char*";
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="TGString";
+            ID=217;
+            Zugriff=2;
+            RueckgabeWert="public:";
+            InlineTyp=2;
+          };
+          {
+            *** Methode ***;
+            Name="TGString";
+            ID=215;
+            Zugriff=2;
+            InlineTyp=2;
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=216;
+              Typ="const char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="TGString";
+            ID=213;
+            Zugriff=2;
+            InlineTyp=2;
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=214;
+              Typ="TGString    &";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="TGStringKonstruktor";
+            ID=218;
+            Zugriff=2;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=219;
+              Typ="const char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="c_str";
+            ID=220;
+            Zugriff=2;
+            RueckgabeWert="const char* const";
+            InlineTyp=2;
+          };
+          {
+            *** Methode ***;
+            Name="operator+";
+            ID=229;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="zahl";
+              ID=230;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+";
+            ID=227;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="adresse";
+              ID=228;
+              Typ="void*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+";
+            ID=225;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=226;
+              Typ="char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+";
+            ID=223;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            InlineTyp=2;
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=224;
+              Typ="const char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+";
+            ID=221;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            InlineTyp=2;
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=222;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+=";
+            ID=237;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=238;
+              Typ="const char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+=";
+            ID=235;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="derBuchstabe";
+              ID=236;
+              Typ="const char";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+=";
+            ID=233;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="zahl";
+              ID=234;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator+=";
+            ID=231;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            InlineTyp=2;
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=232;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator=";
+            ID=243;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=244;
+              Typ="char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator=";
+            ID=241;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            InlineTyp=2;
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=242;
+              Typ="const char*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="operator=";
+            ID=239;
+            Zugriff=2;
+            RueckgabeWert="TGString";
+            InlineTyp=2;
+            {
+              *** Parameter ***;
+              Name="derText";
+              ID=240;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~TGString";
+            ID=245;
+            Zugriff=2;
+          };
+        };
+        {
+          *** Klasse ***;
+          Name="Thread";
+          ID=246;
+          Datentyp="class";
+          Zugriff=3;
+          KomponentenId=-1;
+          FileName="CPP\\Thread.cpp";
+          FileActiveLine=-1;
+          HeaderFileName="CPP\\Thread.h";
+          HeaderFileActiveLine=-1;
+          Parent=-1;
+          {
+            *** Attribut ***;
+            Name="threadForkedHandle";
+            ID=247;
+            Datentyp="void*";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Name="threadIsForked";
+            ID=248;
+            Datentyp="bool";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Doku=" Sicherstellen, dass sich \"Forks\" nicht in die Quere kommen.";
+            Name="threadRunParameter";
+            ID=249;
+            Datentyp="void*";
+            Zugriff=2;
+          };
+          {
+            *** Attribut ***;
+            Doku=" Nur ein Fork pro Objekt zulässig !";
+            Name="threadWaitUntilForked";
+            ID=250;
+            Datentyp="bool";
+            IsStatic=true;
+            Zugriff=2;
+          };
+          {
+            *** Methode ***;
+            Name="Thread";
+            ID=251;
+          };
+          {
+            *** Methode ***;
+            Name="out";
+            ID=252;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="EX";
+              ID=253;
+              Typ="TGString";
+            };
+            {
+              *** Parameter ***;
+              Name="s";
+              ID=254;
+              Typ="TGString";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="threadForkMethod";
+            ID=255;
+            IsStatic=true;
+            Zugriff=2;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="param";
+              ID=256;
+              Typ="void*";
+            };
+          };
+          {
+            *** Methode ***;
+            Doku=" Exit the forked thread";
+            Name="threadForkNewRun";
+            ID=257;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="runParameter";
+              ID=258;
+              Typ="void*";
+            };
+          };
+          {
+            *** Methode ***;
+            Doku=" Checks if forked thread is running";
+            Name="threadForkedExitAndFreeStructure";
+            ID=259;
+            RueckgabeWert="bool";
+          };
+          {
+            *** Methode ***;
+            Doku=" Waits until the forked thread is finished";
+            Name="threadForkedIsRunning";
+            ID=260;
+            RueckgabeWert="bool";
+          };
+          {
+            *** Methode ***;
+            Name="threadForkedWaitFinished";
+            ID=261;
+            RueckgabeWert="bool";
+            {
+              *** Parameter ***;
+              Name="waitTimeoutMilliSec";
+              ID=262;
+              Typ="int";
+            };
+          };
+          {
+            *** Methode ***;
+            Doku=" Returns new thread handle and forks this thread";
+            Name="threadNewRun";
+            ID=263;
+            IsAbstract=true;
+            IsVirtual=true;
+            RueckgabeWert="void";
+            {
+              *** Parameter ***;
+              Name="runParameter";
+              ID=264;
+              Typ="void*";
+            };
+          };
+          {
+            *** Methode ***;
+            Name="~Thread";
+            ID=265;
+          };
+        };
+      };
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\main.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\BufferedThreadsaveLogDevice.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\BufferedThreadsaveLogDevice.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ClientSocket.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ClientSocket.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ConnectionSocket.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ConnectionSocket.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ConnectionSocketPool.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ConnectionSocketPool.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\FileLogDevice.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\FileLogDevice.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Log.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Log.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\LogDev.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\LogDev.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\MyServer.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\MyServer.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ServerSocket.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\ServerSocket.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\StdlibException.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\SystemAPI.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\SystemAPI.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\TCP_Client.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\TCP_Client.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\TCP_Server.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\TCP_Server.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Unit1.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Unit1.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Unit3.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Unit3.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\TGString.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\TGString.h";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Thread.cpp";
+      ActiveLine=-1;
+    };
+    {
+      *** SourceFiles ***;
+      FileName="D:\\Daten\\Subversion\\TCP_Socket\\CPP\\Thread.h";
+      ActiveLine=-1;
+    };
+  };
+};

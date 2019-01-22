@@ -1,0 +1,87 @@
+#ifndef _LCD_HD44780_h_
+#define _LCD_HD44780_h_
+
+class LCD_AbstractTransmiter;
+
+// commands
+#define LCD_CLEARDISPLAY   0x01
+#define LCD_RETURNHOME     0x02
+#define LCD_ENTRYMODESET   0x04
+#define LCD_DISPLAYCONTROL 0x08
+#define LCD_CURSORSHIFT    0x10
+#define LCD_FUNCTIONSET    0x20
+#define LCD_SETCGRAMADDR   0x40
+#define LCD_SETDDRAMADDR   0x80
+
+// flags for display entry mode
+#define LCD_ENTRYRIGHT 0x00
+#define LCD_ENTRYLEFT 0x02
+#define LCD_ENTRYSHIFTINCREMENT 0x01
+#define LCD_ENTRYSHIFTDECREMENT 0x00
+
+// flags for display on/off control
+#define LCD_DISPLAYON 0x04
+#define LCD_DISPLAYOFF 0x00
+#define LCD_CURSORON 0x02
+#define LCD_CURSOROFF 0x00
+#define LCD_BLINKON 0x01
+#define LCD_BLINKOFF 0x00
+
+// flags for display/cursor shift
+#define LCD_DISPLAYMOVE 0x08
+#define LCD_CURSORMOVE 0x00
+#define LCD_MOVERIGHT 0x04
+#define LCD_MOVELEFT 0x00
+
+// flags for function set
+#define LCD_8BITMODE 0x10
+#define LCD_4BITMODE 0x00
+#define LCD_2LINE 0x08
+#define LCD_1LINE 0x00
+#define LCD_5x10DOTS 0x04
+#define LCD_5x8DOTS 0x00
+
+class LCD_HD44780
+{
+  public:
+    LCD_HD44780(LCD_AbstractTransmiter* anyTransmitter);
+
+    void begin(
+      unsigned char cols, 
+      unsigned char rows, 
+      unsigned char dotsize = LCD_5x8DOTS); //LCD_5x10DOTS possible for some displays with just one row
+
+    void write(const char* str);
+    void write(const char c);
+
+    void clear();
+    void home();
+
+    void noDisplay();
+    void display();
+    void noBlink();
+    void blink();
+    void noCursor();
+    void cursor();
+    void scrollDisplayLeft();
+    void scrollDisplayRight();
+    void leftToRight();
+    void rightToLeft();
+    void autoscroll();
+    void noAutoscroll();
+
+    void createChar(unsigned char ascii, unsigned char bytemap[8]);
+    void setCursor(unsigned char x, unsigned char y);
+
+  protected:
+    LCD_AbstractTransmiter* myTransmitter;
+
+    unsigned char _displayfunction;
+    unsigned char _displaycontrol;
+    unsigned char _displaymode;
+
+    unsigned char _numlines;
+    unsigned char _row_offsets[4];
+};
+
+#endif

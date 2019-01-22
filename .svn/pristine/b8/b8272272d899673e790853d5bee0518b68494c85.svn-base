@@ -1,0 +1,80 @@
+#ifndef _App_Base_h_   // Version 1.2 (22.Nov.2015)
+#define _App_Base_h_
+#include <Arduino.h>
+#include "ChatterPin.h"
+#include "Klassennamen.h"
+
+#define HEARTBEATMILLIS 1000
+#define MAX_ANZAHL_TIMERS 10
+#define MAX_ANZAHL_PINS   14
+
+class App_Base
+{
+  private:
+    ArduinoTimer* dieArduinoTimer [MAX_ANZAHL_TIMERS];
+    ChatterPin*   diePinInterrupts[MAX_ANZAHL_PINS  ];
+    unsigned char hardwareInterruptID_Pin2;
+    unsigned char hardwareInterruptID_Pin3;
+
+    unsigned char eventHeartBeatTimer;
+    unsigned char lastError;
+
+    static App_Base* dieAppMitPininterruptHandler;
+    static unsigned char boardID;
+    static unsigned char anzahlErzeugterEvents;
+    static int  pinForHeartbeatFlash;
+
+    static void          attachInterruptFunctionHandler();
+    static unsigned char attachInterruptFunctionHandler_PinInterruptID;
+
+  public:
+    // Anbindung: App an Arduino; NICHT f�r den Anwender! 
+    void setup();
+    void loop();
+
+////////////////////////////////////
+// Ab hier Befehle f�r den Anwender
+////////////////////////////////////
+    App_Base();
+    void setError(unsigned char errorID); // Ver�ndert den Heartbeat
+
+    // Event-Handling
+    ///////////////////////////////////////////////
+    static unsigned char createNewEvent(); // Liefert eine eindeutige Event-ID. Darf vom Anwender aufgerufen werden.
+    void event(int idEvent);  
+
+    // Signale zum debuggen ausgeben (Alles blocking Calls)
+    ///////////////////////////////////////////////
+    static void slowpulse(int pin); // heller-heller-heller-aus
+    static void blinkXTimes(unsigned char pin, unsigned char xTimes); // xTimes mal ein-aus 
+    static void swapLight(unsigned char pin = 13); // ein - aus - ein - aus - ...
+    void setHeartBeatPin(unsigned char pin);  // Disables Heartbeat if Pin = 0
+
+    // Board-ID: Bestimmte Digitalpins auslesen
+    ///////////////////////////////////////////////
+    static unsigned char getBoardID(unsigned char lsb_pin, unsigned char numberOfPins); // Ab lsb_pin die n�chsten numberOfPins als Bitmuster auslesen
+    static unsigned char getBoardID(); // Die zuvor gelesene ID nochmal abrufen aber nicht neu lesen.
+
+    // Anbindung: App__-Implamentierung
+    virtual void appSetup() = 0; //Erst hier Serial Interface und andere Bibliotheken moeglich!
+    virtual void appLoop() = 0; //Wird immer aufgerufen, wenn es nichts zu tun gibt. (ca. 15000 mal pro sec)
+
+    // Interrupts
+    virtual void appEvent(int idEvent) = 0; // Wird von APP_Base aufgerufen, wenn ein Event passiert
+    void stopTimerInterrupt(unsigned char interruptID);
+    unsigned char setTimerInterrupt(unsigned long int mikroSec, unsigned int nEvents = 0); // Timer stoppt nach n Events; n=0 --> Timer stoppt nie
+    void stopPinInterrupt(unsigned char interruptID);
+    unsigned char setPinInterrupt( unsigned char pin,
+                                   unsigned char pinmode,             // OUTPOT, INPUT, INPUT_PULLUP
+                                   unsigned char trigger_UpDnAny,     // TRIGGER_DN TRIGGER_UP TRIGGER_ANY
+                                   bool          useHardwareInterrupt = false,
+                                   unsigned long sperrzeitMikroSec    = 5000,
+                                   unsigned char n                    = 10,
+                                   unsigned char outOfm               = 12);
+
+    // Digital Services
+    static void setHalfbyte(unsigned char firstPin, unsigned char bitmuster, bool setPinModeOutput);
+};
+
+#endif
+

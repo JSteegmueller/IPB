@@ -1,0 +1,21 @@
+#ifndef _BlumenServer_h
+#define _BlumenServer_h
+
+class EthernetClient;
+class EthernetServer;
+class ByteBuffer;
+
+class BlumenServer
+{
+  private:
+    EthernetClient* client;
+    EthernetServer* server;
+
+    bool alreadyConnected; // whether or not the client was connected previously
+
+  public:
+    void begin();
+    void loop();
+    void sendData(ByteBuffer* derByteBuffer);
+};
+#endif

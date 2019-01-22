@@ -1,0 +1,15 @@
+#ifndef _SPIClass_h_
+#define _SPIClass_h_
+
+class SPIClass
+{
+  public:
+    static void init();
+    static void setClockFrequency_2_4_8_16_32_128(unsigned char divider); // 2 ... 128
+    static void setMode(unsigned char Mode_0_3);
+    static void startTransmission();
+    static void finishTransmission() ;
+    static void sendByte(unsigned char data);
+};
+
+#endif

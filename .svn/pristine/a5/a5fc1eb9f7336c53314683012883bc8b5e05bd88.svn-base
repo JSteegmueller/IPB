@@ -1,0 +1,133 @@
+#include "TCP_Client.h"
+#include "ClientSocket.h"
+#include "SystemAPI.h"
+#include "WindowsSocketApi.h"
+#include "TGString.h"
+
+#ifdef __LOG_TCP_Client__
+#include "Log.h"
+#endif
+
+#ifdef __LOG_TCP_Client__
+static void out(TGString EX, TGString s)
+{
+   Log::out(S_+EX+": TCP_Client::("+SystemAPI::threadGetCurrentID() +") " +s);
+}
+#endif
+
+TCP_Client::TCP_Client()
+{
+   #ifdef __LOG_TCP_Client__
+   out("E", S_ + "TCP_Client()");
+   #endif
+
+   WindowsSocketAPI::startup();
+
+   clientSocket = new ClientSocket();
+   clientSocket->pDerServerProzessHandler = this;
+
+   #ifdef __LOG_TCP_Client__
+   out("X", S_ + "TCP_Client()");
+   #endif
+}
+
+TCP_Client::~TCP_Client()
+{
+   //////////////////////////////////////////////
+   //Monitoring im Destruktor nicht möglich!
+   #undef __LOG_TCP_Client__
+   //////////////////////////////////////////////
+
+   #ifdef __LOG_TCP_Client__
+   out("E", S_ + "~TCP_Client()");
+   #endif
+
+   disconnectFromServer();
+   delete clientSocket; clientSocket = 0;
+
+   #ifdef __LOG_TCP_Client__
+   out("E", S_ + "~TCP_Client()");
+   #endif
+}
+
+void TCP_Client::initAndConnectToServer(const char* serverAddress, int serverPort)
+{
+   #ifdef __LOG_TCP_Client__
+   out("E", S_ + "initAndConnectToServer(char* serverAddress="+serverPort+", int serverPort="+serverPort+")");
+   #endif
+
+   TGString localHost("localhost");
+   if (localHost == serverAddress)
+   {
+      serverAddress = "127.0.0.1";
+   }
+
+
+   clientSocket->initAndConnectToServer(serverAddress, serverPort); // Throws Exception
+
+   forkNewRun(clientSocket);
+
+   #ifdef __LOG_TCP_Client__
+   out("X", S_ + "initAndConnectToServer(..)");
+   #endif
+}
+
+void TCP_Client::disconnectFromServer()
+{
+   #ifdef __LOG_TCP_Client__
+   out("E", S_ + "disconnectFromServer()");
+   #endif
+
+   clientSocket->disconnectFromServer();
+
+   #ifdef __LOG_TCP_Client__
+   out("X", S_ + "disconnectFromServer()");
+   #endif
+}
+
+void TCP_Client::sendData(void* data, int anzahlBytes)
+{
+   #ifdef __LOG_TCP_Client__
+   out("E", S_ + "sendData(void* data, int anzahlBytes="+anzahlBytes+")");
+   #endif
+
+   clientSocket->sendData(data, anzahlBytes);
+
+   #ifdef __LOG_TCP_Client__
+   out("E", S_ + "sendData(..)");
+   #endif
+}
+
+void TCP_Client::newRun(void* runParameter)
+{
+   #ifdef __LOG_TCP_Client__
+   out("E", "threadNewRun(void* runParameter)");
+   #endif
+
+   ClientSocket* clientSocketObject = (ClientSocket*)runParameter;
+
+   while(true)
+   {
+      // Blocking call (Server generates this Type of Socket!)
+      int laenge = recv( clientSocketObject->winSocketHandler,
+                         clientSocketObject->buffer,
+                         CLIENT_BUFFER_LENGTH,
+                         0);  // No PEEK, no OOB
+
+      // recv:
+      // If no error occurs, recv returns the number of bytes received.
+      // If the connection has been gracefully closed, the return value is zero.
+      // Otherwise, a value of SOCKET_ERROR is returned, and a specific error code can
+      // be retrieved by calling WSAGetLastError.
+
+      if (laenge == 0) break;  // Verbindung wurde getrennt.
+
+      clientSocketObject->pDerServerProzessHandler->dataReceived( clientSocketObject,
+                                                          clientSocketObject->buffer,
+                                                          laenge);
+   }
+
+   #ifdef __LOG_TCP_Client__
+   out("X", "threadNewRun(void* runParameter)");
+   #endif
+}

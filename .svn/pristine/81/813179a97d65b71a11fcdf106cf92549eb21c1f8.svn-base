@@ -1,0 +1,78 @@
+#ifndef _TGString_H_
+#define _TGString_H_
+
+class TGString
+{
+   private:
+   char* text;
+   int   textStrLen;
+   int   textBytesAllokiert;
+
+   char* buffer_100;
+   int   ALLOCATION_INCREMENT;
+
+   private:
+   void TGStringKonstruktor(const char* einText);
+   TGString& usePointer(char* derAllokierteText, int bytesAllokiert, int derTextStrLen = -1);
+
+   public:
+   inline TGString(                    ){TGStringKonstruktor(""             );};
+   inline TGString(const char*  einText){TGStringKonstruktor(einText        );};
+   inline TGString(TGString    &einText){TGStringKonstruktor(einText.c_str());};
+   inline TGString(int          zahl   ){TGStringKonstruktor( (TGString()+zahl).c_str() );};
+   inline TGString(double       zahl   ){TGStringKonstruktor( (TGString()+zahl).c_str() );};
+          ~TGString();
+
+          bool     operator!=(TGString einText);
+          bool     operator!=(const char* einText);
+          bool     operator==(TGString einText);
+          bool     operator==(const char* einText);
+
+          TGString operator+=(const char* einText);
+          TGString operator+=(const char derBuchstabe);
+          TGString operator+=(int zahl);
+   inline TGString operator+=(double zahl){return this->operator=(*this + zahl);};
+   inline TGString operator+=(TGString einText){return operator+= (einText.c_str());};
+
+          TGString operator=(char*       einText);
+   inline TGString operator=(const char* einText){ return operator=((char*)einText);  };
+   inline TGString operator=(TGString    einText){ return operator=(einText.c_str()); };
+   inline TGString operator=(int         zahl   ){ return operator=(TGString()+zahl); };
+   inline TGString operator=(double      zahl   ){ return operator=(TGString()+zahl); };
+
+          bool operator<(TGString einText);
+          bool operator>(TGString einText);
+
+          TGString operator+(bool zahl);
+          TGString operator+(double zahl);
+          TGString operator+(char buchstabe);
+          TGString operator+(int zahl);
+          TGString operator+(void* adresse);
+          TGString operator+(char*       einText);
+   inline TGString operator+(const char* einText){return operator+ ((char*)einText);};
+   inline TGString operator+(TGString    einText){return operator+ (einText.c_str());};
+
+          char operator[](int index){return this->c_str()[index];};
+
+   inline char* const c_str(){return (char* const)text;};
+          int         length();
+          TGString    trim();
+          TGString    subString(int index, int count=-1); // -1 = alles bis zum Ende
+          int         toInt(bool* isValid = 0);
+          double      toDouble(bool* isValid = 0);
+          int         find(TGString s, int startIndex = 0); // liefert -1 wenn nicht gefunden wird. Suche ab Startindex
+          TGString    toUpperCase();
+
+                      // gibt immer die nullen gemaess "anzahlNachkommastellen" an (auch bei 42,00) und rundet mathematisch
+          TGString&   addDoubleValue(double d, int anzahlNachkommastellen = -1); // -1 ... maximale Genauigkeit
+                      // Sehr Schnell im vergleich zu operator+ oder operator+=
+          TGString&   addText(const char* derText, int strlength = -1); // -1 ... nicht bekannte Länge; Wird dann von Methode berechnet (Performance!!)
+   inline TGString&   addText(TGString& s){addText(s.c_str(), s.length()); return *this;};
+
+          void        writeToFile(TGString filename);
+          void        readFromFile(TGString filename);
+          TGString    replace(TGString search, TGString replacement);
+          int         countSubstring(TGString s);
+};
+#endif
+

@@ -1,0 +1,465 @@
+#include "TGString.h"
+#include <stdio.h>
+#include <string.h>
+#include <sstream.h>
+
+void TGString::TGStringKonstruktor(const char* einText)
+{
+   buffer_100 = new char[100];
+
+   ALLOCATION_INCREMENT = 1000;
+
+   if (einText == 0) einText = "NULL";
+   textStrLen = strlen(einText);
+   textBytesAllokiert = textStrLen + ALLOCATION_INCREMENT;
+   text = new char[textBytesAllokiert];
+   strcpy(text, einText);
+}
+
+TGString::~TGString()
+{
+   delete[] text      ; text     = 0;
+   delete   buffer_100; buffer_100=0;
+}
+
+TGString TGString::operator=(char* einText)
+{
+   if (einText == 0) einText = "NULL";
+   textStrLen = strlen(einText);
+
+   if (textStrLen >= textBytesAllokiert)
+   {
+      delete[] text;
+      textBytesAllokiert = textStrLen+ALLOCATION_INCREMENT;
+      text=new char[textBytesAllokiert];
+   }
+
+   strcpy(text, einText);
+   return *this;
+}
+
+TGString TGString::operator+(char* einText)
+{
+   if (einText == 0) einText = "NULL";
+   int textlaenge1= strlen(text);
+   textStrLen = textlaenge1+strlen(einText);
+
+   int bytesAllokieren = textStrLen + ALLOCATION_INCREMENT;
+   char* ergebnis = new char[bytesAllokieren];
+
+   strcpy(ergebnis, text);
+   strcpy(ergebnis + textlaenge1, einText);
+
+   TGString neuerText;
+   neuerText.usePointer( ergebnis, bytesAllokieren, textStrLen );
+   return neuerText;
+}
+
+TGString TGString::operator+(void* adresse)
+{
+   return operator+((int) adresse);
+}
+
+TGString TGString::operator+(bool zahl)
+{
+   TGString erg;
+   sprintf(buffer_100, "%i", (int)zahl);
+   return this->operator+( buffer_100 );
+}
+
+TGString TGString::operator+(int zahl)
+{
+   sprintf(buffer_100, "%i", zahl);
+   return this->operator+(buffer_100);
+}
+
+TGString TGString::operator+(double zahl)
+{
+   sprintf(buffer_100, "%f", zahl);
+   TGString s = this->operator+(buffer_100);
+   return s.replace(".",",");
+}
+
+TGString  TGString::operator+(const char derBuchstabe)
+{
+   TGString erg;
+   char text[2] = {0,0};
+   text[0] = derBuchstabe;
+   return this->operator+(text);
+}
+
+TGString TGString::operator+=(const char* einText)
+{
+   if (einText == 0) einText = "NULL";
+   addText(einText);
+   return *this;
+}
+
+TGString  TGString::operator+=(const char derBuchstabe)
+{
+   char einText[2] = {derBuchstabe, 0};
+   addText(einText);
+   return *this;
+}
+
+TGString TGString::operator+=(int zahl)
+{
+   sprintf(buffer_100, "%i", zahl);
+   addText(buffer_100);
+   return *this;
+}
+
+bool TGString::operator!=(const char* einText)
+{
+   return !(*this == einText);
+}
+
+bool TGString::operator!=(TGString einText)
+{
+   return !(*this == einText);
+}
+
+bool TGString::operator==(TGString einText)
+{
+   return *this==einText.c_str();
+}
+
+bool TGString::operator==(const char* einText)
+{
+   if (einText == 0) return false;
+   return ( strcmp(einText, text) == 0 );
+}
+
+int TGString::length()
+{
+   return textStrLen;
+}
+
+TGString TGString::subString(int index, int count)
+{
+   if (length() < index) return "";
+   if ((count == 0)||(count < -1)) return "";
+
+   TGString erg;
+   erg = this->c_str()+index;
+
+   if (count == -1) return erg; // Nur den Anfang beschneiden
+
+   if (erg.length() > count)    // Wenn mehr Zeichen da sind als count angibt
+   {
+      *(erg.c_str()+count) = 0; // Stringende setzen
+   }
+
+   return erg;
+}
+
+TGString TGString::trim()
+{
+   // kein trimmen notwendig?
+   if (length()==0) return *this;
+   if ((text[0]!=' ')&&(text[length()-1]!=' ')) return *this;
+
+   int index[2];
+
+   // Linke Seite suchen
+   for (int i=0; i<length(); i++)
+   {
+      if(text[i]!=' ')
+      {
+         index[0] = i;
+         break;
+      }
+   }
+
+   // Rechte Seite suchen
+   for (int i=length()-1; i>=0; i--)
+   {
+      if(text[i]!=' ')
+      {
+         index[1] = i;
+         break;
+      }
+   }
+
+   return subString(index[0], index[1]);
+}
+
+bool TGString::operator<(TGString einText)
+{
+   return strcmp(text, einText.text)<0;
+}
+
+bool TGString::operator>(TGString einText)
+{
+   return strcmp(einText.text, text)<0;
+}
+
+int TGString::find(TGString s, int startIndex)
+{
+   bool alleBuchstabenGleich;
+   for (int i = startIndex; i<length(); i++)
+   {
+      alleBuchstabenGleich = true;
+      for(int k=0; k<s.length(); k++)
+      {
+         char c1 = (*this)[i+k];
+         char c2 = s[k];
+         if (c1 != c2)
+         {
+            alleBuchstabenGleich = false;
+            break;
+         }
+      }
+
+      if (alleBuchstabenGleich) // Alle waren gleich --> kein break
+      {
+         return i;  // gefunden!
+      }
+   }
+
+   return -1; // nix gefunden
+}
+
+void TGString::writeToFile(TGString filename)
+{
+   FILE* file= fopen(filename.c_str(), "w");
+   if (file == 0) return;
+   fwrite(text, length(), 1, file);
+   fclose(file);
+}
+
+void TGString::readFromFile(TGString filename)
+{
+   FILE* file= fopen(filename.c_str(), "r");
+   if (file == 0) return;
+
+   char buffer[100];
+   int anzBytes;
+   do
+   {
+       anzBytes = fread(buffer, 1, 99, file);
+       buffer[anzBytes] = 0;
+       *this += buffer;
+   }
+   while (anzBytes==99);
+
+   fclose(file);
+}
+
+TGString& TGString::addDoubleValue(double d, int anzahlNachkommastellen)
+{
+   TGString s;
+   if (anzahlNachkommastellen < 0)
+   {
+      s = d;
+
+      this->operator +=(s);
+      return *this;
+   }
+
+   if (d>0)
+   {
+      d += 0.5 * pow10(-anzahlNachkommastellen);
+   }
+   else
+   {
+      d -= 0.5 * pow10(-anzahlNachkommastellen);
+   }
+
+   if (anzahlNachkommastellen > 0)
+   {
+      s = d;
+      int posKomma = s.find(".");
+      if (posKomma == -1)
+      {
+         posKomma = s.find(",");
+      }
+
+      if (posKomma == -1)
+      {
+         this->operator +=(s);
+         return *this;
+      }
+
+      s = s.subString(0, posKomma) + s.subString(posKomma, anzahlNachkommastellen+1);
+   }
+   else // anzahlNachkommastellen == 0
+   {
+      s = d;
+      int posKomma = s.find(".");
+      if (posKomma == -1)
+      {
+         posKomma = s.find(",");
+      }
+
+      if (posKomma == -1)
+      {
+         this->operator +=(s);
+         return *this;
+      }
+
+      s = s.subString(0, posKomma);
+   }
+
+   this->operator +=(s);
+   return *this;
+}
+
+int TGString::toInt(bool* isValid)
+{
+   bool valid = true;
+   if (length()==0)
+   {
+      valid=false;
+      return 0;
+   }
+
+   std::string str = text;
+   int num;
+   std::stringstream ss(str);
+   ss>>num;  // "  -  42xx" ist erlaubt: liefert -42
+   if (ss.fail()) valid=false;
+
+   if (valid==false)
+   {
+      num = 0;
+   }
+
+   if (isValid != 0)
+   {
+      *isValid = valid;
+   }
+
+   return num;
+}
+
+double TGString::toDouble(bool* isValid)
+{
+   TGString doubleString = *this;
+   if (length()==0)
+   {
+      if (isValid != 0) *isValid = false;
+      return 0;
+   }
+
+   int anzahlKommas = this->countSubstring(",");
+
+   if (anzahlKommas > 1)
+   {
+      if (isValid != 0) *isValid = false;
+      return 0;
+   }
+   else if (anzahlKommas == 1)
+   {
+      doubleString = doubleString.replace(".", "");
+      doubleString = doubleString.replace(",", ".");
+   }
+   else
+   {
+      int anzahlPunkte = this->countSubstring(".");
+      if (anzahlPunkte > 1)
+      {
+         doubleString = doubleString.replace(".", "");
+      }
+   }
+
+
+   std::string str = doubleString.c_str();
+
+   double num;
+   std::stringstream ss(str);
+   ss>>num;  // Hier wird umgewandelt
+   if (ss.fail())
+   {
+      if (isValid != 0) *isValid = false;
+      return 0;
+   }
+
+   if (isValid != 0) *isValid = true;
+
+   return num;
+}
+
+int TGString::countSubstring(TGString s)
+{
+   int startIndex = 0;
+   int anzahlGefunden = 0;
+
+   int gef = find(s, startIndex);
+   while (gef > -1)
+   {
+      anzahlGefunden++;
+      startIndex = gef+1;
+      gef = find(s, startIndex);
+   }
+
+   return anzahlGefunden;
+}
+
+TGString TGString::replace(TGString search, TGString replacement)
+{
+   TGString temp = *this;
+   int pos = temp.find(search);
+
+   while (pos != -1)
+   {
+      temp = temp.subString(0,pos) + replacement +  temp.subString(pos+search.length());
+      pos = temp.find(search);
+   }
+
+   return temp;
+}
+
+TGString& TGString::usePointer(char* einAllokierterText, int bytesAllokiert, int einTextStrLen)
+{
+   delete[] text;
+   text = einAllokierterText;
+   textBytesAllokiert = bytesAllokiert;
+   if (einTextStrLen == -1)
+   {
+      textStrLen = strlen(einAllokierterText);
+   }
+   else
+   {
+      textStrLen = einTextStrLen;
+   }
+
+   return *this;
+}
+
+TGString& TGString::addText(const char* einText, int einTextStrlength)
+{
+   if (einTextStrlength == -1)
+   {
+      einTextStrlength = strlen(einText);
+   }
+
+   if (einTextStrlength + textStrLen >= textBytesAllokiert)
+   {
+       int neuerTextAllokiert = einTextStrlength + textStrLen + ALLOCATION_INCREMENT;
+       char* neuerText = new char[neuerTextAllokiert];
+       strcpy(neuerText, text);
+       strcpy(neuerText + textStrLen, einText);
+       this->usePointer(neuerText, neuerTextAllokiert, textStrLen + einTextStrlength);
+   }
+   else
+   {
+       strcpy(text + textStrLen, einText);
+       textStrLen += einTextStrlength;
+   }
+
+   return *this;
+}
+
+TGString TGString::toUpperCase()
+{
+   TGString s;
+   s = *this;
+
+   for(int i = 0; i < s.length(); i++)
+   {
+      s.c_str()[i] = toupper(s[i]);
+   }
+
+   return s;
+}

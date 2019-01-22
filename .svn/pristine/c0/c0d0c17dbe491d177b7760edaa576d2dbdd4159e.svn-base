@@ -1,0 +1,42 @@
+#ifndef _ConnectionSocketListe_h_
+#define _ConnectionSocketListe_h_
+#include "TGString.h"
+
+// Elemente mit diesem Datentyp werden gespeichert:
+#define ELEMENT_NAME ConnectionSocket
+
+// Diese Liste übernimmt den Besitz ihrer Elemente (Objektzeiger wird kopiert).
+// Das bedeutet: Alle Elemente werden mit dem
+// Destruktor dieser Liste aus dem Speicher
+// gelöscht. (delete)
+
+// Desweiteren dürfen keine temporären Elemente
+// übergeben werden. (Elemente MÜSSEN mit "new" erzeugt
+// werden)
+
+class ELEMENT_NAME;
+
+class ConnectionSocketListe
+{
+private:
+   void* dieVectorListe;
+
+public:
+   ConnectionSocketListe();
+   ConnectionSocketListe(ConnectionSocketListe &v){throw "Keinen Kopierkonstruktor verwenden";};
+   ~ConnectionSocketListe();
+   void operator=(ConnectionSocketListe v){throw "Keinen Gleichoperator verwenden";};
+
+   void push_back(ELEMENT_NAME* e);
+   int size();
+   void clear();
+   void erase(int i);
+   ELEMENT_NAME* at(int i);
+   void set(int i, ELEMENT_NAME* e);    // überschreiben, Liste vergroessern, falls nötig
+   void insert(int i, ELEMENT_NAME* e); // wegrücken, Liste vergroessern, falls nötig
+   TGString toString();
+   void writeToFile(TGString dateiname);
+};
+
+#undef ELEMENT_NAME
+#endif

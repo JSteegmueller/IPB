@@ -1,0 +1,37 @@
+#ifndef _SystemAPI_H_
+#define _SystemAPI_H_
+
+#include <string> // std::string
+
+class SystemAPI
+{
+   static double ticksPerMykrosec;
+
+   public:
+   static void        sleep(int ms);
+   static long int    getMsSinceSystemstart();
+   static double      getTicksPerMykrosec();
+   static long int    get100MykroSecSinceSystemstart();
+   static std::string getTimeDDMMYYY_hhmmss();
+
+   static void    taskleisteEinblenden();
+   static void    taskleisteAusblenden();
+   static void    setTransparency(HWND einHandle, int transparencyValue_0_255); // 0=durchsichtig
+   static int     getScreenWidth();
+   static int     getScreenHeight();
+
+   static void    socketSetTrueFalseSocketOpt(int handler, int level, int option, bool enable);
+
+   static void    threadKillAllThreadsExceptThisOfCurrentProcess();
+   static int     threadGetCurrentID();
+   static bool    threadChekExists(void* threadHandle);  // Checks if the given Thread is in the task list (suspended or not)
+   static void    threadExitAndFreeStructure(void* threadHandle); // Exit the own thread if threadHandle = -1
+   static void*   threadGetCurrentThreadHandle();
+
+   static void    initBITMAPINFO_RGB24(void* pBITMAPINFOHEADER, int width, int height);
+   static __int64 queryPerformanceCounter();
+   static __int64 getDiskFreeSpace(char* volumeName);
+};
+
+#endif
+

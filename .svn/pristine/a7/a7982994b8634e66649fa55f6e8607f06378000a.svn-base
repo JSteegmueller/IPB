@@ -1,0 +1,36 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+USEFORM("Unit1.cpp", Form1);
+USEUNIT("benoetigte_Module\SystemAPI.cpp");
+USEUNIT("benoetigte_Module\WindowsSocketApi.cpp");
+USEUNIT("benoetigte_Module\TGString.cpp");
+USEUNIT("benoetigte_Module\Thread.cpp");
+USEUNIT("TCP_Socket\TCP_Server.cpp");
+USEFORM("Monitoring\MonitorWindow.cpp", MonitorWindow);
+USEUNIT("Monitoring\BufferedThreadsaveLogDevice.cpp");
+USEUNIT("Monitoring\Log.cpp");
+USEUNIT("Monitoring\LogDevice.cpp");
+USEUNIT("TCP_Socket\AddressFamilyInternetSocketHelper.cpp");
+USEUNIT("TCP_Socket\ConnectionSocketPool.cpp");
+USEUNIT("TCP_Socket\ConnectionSocket.cpp");
+USEUNIT("TCP_Socket\ConnectionSocketListe.cpp");
+USEUNIT("MyServer.cpp");
+//---------------------------------------------------------------------------
+WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+{
+        try
+        {
+                 Application->Initialize();
+                 Application->CreateForm(__classid(TForm1), &Form1);
+                 Application->CreateForm(__classid(TMonitorWindow), &MonitorWindow);
+                 Application->Run();
+        }
+        catch (Exception &exception)
+        {
+                 Application->ShowException(&exception);
+        }
+        return 0;
+}
+//---------------------------------------------------------------------------

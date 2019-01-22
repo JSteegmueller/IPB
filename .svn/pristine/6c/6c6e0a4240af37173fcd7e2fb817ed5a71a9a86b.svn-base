@@ -1,0 +1,104 @@
+#include "ConnectionSocket.h"
+#include "TCP_Server.h"
+
+//#define __LOG_ConnectionSocket__
+
+#ifdef __LOG_ConnectionSocket__
+#include "Monitoring\Log.h"
+#endif
+
+ConnectionSocket::ConnectionSocket(int einSocket, SOCKADDR_IN* clientAddressInformation, TCP_Server* pEinServerProzessHandler)
+{
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "E: ConnectionSocket(einSocket=" + einSocket + " SOCKADDR_IN*=" + clientAddressInformation + " TCP_Server*=" + pEinServerProzessHandler);
+   #endif
+
+   winSocketHandler         = einSocket;
+   family                   = clientAddressInformation->sin_family;
+   clientPort               = clientAddressInformation->sin_port;
+   clientAddress            = inet_ntoa(clientAddressInformation->sin_addr);
+   pDerServerProzessHandler = pEinServerProzessHandler;
+
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "X: ConnectionSocket()");
+   #endif
+}
+
+// this method starts with the new forked thread
+void ConnectionSocket::newRun(void* runParameter)
+{
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "E: ConnectionSocket::threadNewRun(runParameter="+runParameter);
+   #endif
+
+   ConnectionSocket* thisObject = (ConnectionSocket*)runParameter;
+
+   while(true)
+   {
+      // Blocking call (Server generates this Type of Socket!)
+      int laenge = recv( thisObject->winSocketHandler,
+                         thisObject->buffer,
+                         CONECTION_BUFFER_LENGTH,
+                         0);  // No PEEK, no OOB
+
+      // recv:
+      // If no error occurs, recv returns the number of bytes received.
+      // If the connection has been gracefully closed, the return value is zero.
+      // Otherwise, a value of SOCKET_ERROR is returned, and a specific error code can
+      // be retrieved by calling WSAGetLastError.
+
+      if (laenge <= 0) break;  // Verbindung wurde getrennt.
+
+      thisObject->pDerServerProzessHandler->dataReceived( thisObject,
+                                                          thisObject->buffer,
+                                                          laenge,
+                                                          thisObject->clientAddress,
+                                                          thisObject->clientPort);
+   }
+
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "ConnectionSocket::threadNewRun()... exiting Loop");
+   #endif
+
+   thisObject->close(); // CSPool kann diesen CS jetzt löschen
+
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "X: ConnectionSocket::threadNewRun()");
+   #endif
+};
+
+void ConnectionSocket::close()
+{
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "E: ConnectionSocket::close()");
+   #endif
+
+   this->exitAndFreeStructure();
+   this->waitFinished(200);
+   closesocket(winSocketHandler);
+   winSocketHandler = 0; // CSPool kann diesen CS jetzt löschen
+
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "X: ConnectionSocket::close()");
+   #endif
+}
+
+bool ConnectionSocket::sendData(void* data, int anzahlBytes)
+{
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "E: ConnectionSocket::sendData(..., anzahlBytes="+anzahlBytes);
+   #endif
+
+   int erg = send(winSocketHandler, (const char*)data, anzahlBytes, 0);
+
+   #ifdef __LOG_ConnectionSocket__
+   Log::out(S_ + "X: ConnectionSocket::sendData():"+erg);
+   #endif
+   return ( erg != -1);
+}
+
+TGString ConnectionSocket::toString()
+{
+   return TGString(clientAddress) + ":" + clientPort;
+}
+

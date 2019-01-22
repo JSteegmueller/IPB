@@ -1,0 +1,69 @@
+#ifndef Unit2H
+#define Unit2H
+
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include "TCP_Client.h"
+#include "TGString.h"
+
+TGString s;
+char buffer [1026];
+AnsiString dateiname;
+int anzMessungen = 0;
+
+class MyTCP_Client : public TCP_Client
+{
+   public:
+   TLabel* dasAusgabefeld;
+   void dataReceived(void* connectionSocket, char* data, int laenge)
+   {
+      memcpy (buffer,data,laenge);
+      buffer [laenge]=0;
+      s = s + buffer;
+
+
+      if (s.subString(s.length()-6, 6) ==  "<ende>")
+      {
+         dateiname = "Messung";
+         dateiname = dateiname + anzMessungen + ".csv";
+         anzMessungen++;
+         s.writeToFile(dateiname.c_str());
+         s="";
+      }
+
+      //dasAusgabefeld->Caption = data;
+   }
+};
+
+
+#include "TCP_Socket_ClassDeclarations.h"
+//---------------------------------------------------------------------------
+
+class TForm1 : public TForm
+{
+__published:	// Von der IDE verwaltete Komponenten
+        TButton *ButtonSend;
+        TEdit *Edit1;
+        TEdit *Edit2;
+        TEdit *Edit3;
+        TLabel *Label1;
+        TLabel *Label2;
+        TButton *ButtonOpenConnection;
+        TButton *ButtonCloseConnection;
+        TLabel *Label3;
+        void __fastcall ButtonSendClick(TObject *Sender);
+        void __fastcall ButtonOpenConnectionClick(TObject *Sender);
+        void __fastcall ButtonCloseConnectionClick(TObject *Sender);
+private:	// Anwender-Deklarationen
+        FileLogDevice* mp_fileLogDevice;
+        MyTCP_Client*  mp_derClient;
+
+public:		// Anwender-Deklarationen
+        __fastcall TForm1(TComponent* Owner);
+        __fastcall ~TForm1();
+};
+
+#endif

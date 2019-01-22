@@ -1,0 +1,106 @@
+#include "Dhcp.h"
+#include "Dns.h"
+#include "Ethernet.h"
+#include "EthernetClient.h"
+#include "EthernetServer.h"
+#include "EthernetUdp.h"
+
+#include "App_Minimal.h"
+#include "Arduino.h"
+#include "TimeBlockFilter.h"
+#include "SPI.h"
+#include "Ethernet.h"
+
+#define WIZNET_RESET_PIN 2
+
+// file:///C:/Program%20Files/Arduino/reference/arduino.cc/en/Reference/Ethernet.html
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+IPAddress     ip(172, 16, 10, 204);
+IPAddress     myDns(172, 16, 10, 1);
+IPAddress     gateway(172, 16, 10, 1);
+IPAddress     subnet(255, 255, 255, 0);
+unsigned char serverPort = 123;
+
+EthernetClient client;
+EthernetServer server(serverPort);
+unsigned char  timer            = 0;
+boolean        alreadyConnected = false;
+
+// Beim Programmstart vor dem Booten
+App_Minimal::App_Minimal()
+{
+}
+
+// Beim Programmstart nach dem Booten
+void App_Minimal::appSetup()
+{
+  //  timer = setTimerInterrupt(2000000);
+  Serial.println("Reset...");
+
+  pinMode(WIZNET_RESET_PIN, OUTPUT);
+  digitalWrite(WIZNET_RESET_PIN, HIGH);
+  delay(50);
+  digitalWrite(WIZNET_RESET_PIN, LOW);
+  delay(50);
+  digitalWrite(WIZNET_RESET_PIN, HIGH);
+  delay(100);
+
+  Serial.println("EthernetBegin...");
+
+  Ethernet.begin(mac, ip, myDns, gateway, subnet);
+  server.begin();
+
+  while (!Serial);
+
+  Serial.print("Server address:");
+  Serial.println(Ethernet.localIP());
+}
+
+// Nach appSetup und dann immer ca 15000 mal pro Sekunde
+void App_Minimal::appLoop()
+{
+  /*
+    // wait for a new client:
+    if (!alreadyConnected)
+    {
+      client = server.available();
+      if (client)
+      {
+        Serial.println("Neuer client");
+        alreadyConnected = true;
+      }
+    }
+
+    if (client)
+    {
+      if (alreadyConnected)
+      {
+        if (client.available() > 0)
+        {
+          char thisChar = client.read();
+          Serial.write(thisChar);
+        }
+      }
+    }
+    */
+}
+
+int i = 0;
+// Wird immer dann aufgerufen
+void App_Minimal::appEvent(int idEvent)
+{
+  /*
+   if (idEvent == timer)
+   {
+     if (client)
+     {
+       String s;
+       s = s + i;
+       i++;
+       client.write(s.c_str(), s.length()+1);
+       client.flush();
+       Serial.write("Senden");
+     }
+   }
+   */
+}

@@ -1,0 +1,138 @@
+#include "ConnectionSocketListe.h"
+#include "ConnectionSocket.h"
+
+#include <stdio>
+#include <vector>
+using std::vector;
+
+#define ELEMENT_NAME ConnectionSocket
+#define VECTORCLASSNAME vector<ELEMENT_NAME*>
+#define DIE_VEKTORLISTE  ((VECTORCLASSNAME*)dieVectorListe)
+
+ConnectionSocketListe::ConnectionSocketListe()
+{
+   dieVectorListe = new VECTORCLASSNAME();
+}
+
+/* Keinen Kopierkonstruktor!
+ConnectionSocketListe::ConnectionSocketListe(ConnectionSocketListe &v)
+{
+   clear();
+
+   for (int i=0; i<v.size(); i++)
+   {
+      push_back(v.at(i));
+   }
+}
+*/
+
+/* Keinen Gleichoperator
+void ConnectionSocketListe::operator=(ConnectionSocketListe v)
+{
+   clear();
+
+   int s = v.size();
+   for (int i=0; i<s; i++)
+   {
+      push_back(v.at(i));
+   }
+}
+*/
+
+ConnectionSocketListe::~ConnectionSocketListe()
+{
+   clear();
+   delete dieVectorListe;
+}
+
+int ConnectionSocketListe::size()
+{
+   return DIE_VEKTORLISTE->size();
+}
+
+ELEMENT_NAME* ConnectionSocketListe::at(int i)
+{
+   if (i>=size()) throw "Element existiert nicht. Index:";
+   return DIE_VEKTORLISTE->at(i);
+}
+
+void ConnectionSocketListe::clear()
+{
+   int s = size();
+   if (s==0) return;
+
+   if (s<0) throw "ConnectionSocketListe::clear()-->Nicht initialisierte ConnectionSocketListe";
+
+   DIE_VEKTORLISTE->clear();
+}
+
+void ConnectionSocketListe::erase(int i)
+{
+   VECTORCLASSNAME::iterator it = DIE_VEKTORLISTE->begin()+i;
+   DIE_VEKTORLISTE->erase(it);
+}
+
+TGString ConnectionSocketListe::toString()
+{
+   TGString s = "ConnectionSocketListe:\n";
+   for (int i=0; i<size(); i++)
+   {
+      s += i;
+      s += ";";
+      s += at(i)->toString();
+      s += "\n";
+   }
+
+   return s;
+}
+
+void ConnectionSocketListe::writeToFile(TGString dateiname)
+{
+   FILE* dateihandle;
+   dateihandle = fopen(dateiname.c_str(), "w");
+
+   TGString s;
+   for (int i=0; i<size(); i++)
+   {
+      s = "";
+      s += at(i)->toString();
+      s += "\n";
+
+      fwrite(s.c_str(), s.length(), 1, dateihandle);
+   }
+
+   fclose(dateihandle);
+}
+
+void ConnectionSocketListe::push_back(ELEMENT_NAME* e)
+{
+   DIE_VEKTORLISTE->push_back(e);
+}
+
+void ConnectionSocketListe::insert(int i, ELEMENT_NAME* e)
+{
+   int delta = i-size();
+   if (delta > 0)
+   {
+      for (int k=0; k<delta; k++)
+      {
+         push_back(new ELEMENT_NAME(0,0,0));
+      }
+   }
+
+   DIE_VEKTORLISTE->insert(DIE_VEKTORLISTE->begin()+i, e);
+}
+
+void ConnectionSocketListe::set(int i, ELEMENT_NAME* e)
+{
+   if ((i-size() > 0)||(size() == 0))
+   {
+      insert(i, e);
+   }
+   else
+   {
+      DIE_VEKTORLISTE->at(i) = e;
+   }
+}
+
+#undef ELEMENT_NAME
